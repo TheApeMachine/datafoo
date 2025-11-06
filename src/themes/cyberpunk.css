@@ -1,0 +1,317 @@
+/**
+ * Cyberpunk Theme
+ *
+ * A vibrant, high-tech theme with neon accents and strong contrasts.
+ * Inspired by cyberpunk aesthetics with electric blues, hot pinks, and cyber greens.
+ *
+ * Supports 3 modes (light, dim, dark) × 2 contrast levels (normal, high) = 6 variations
+ */
+
+/* ============================================
+   BASE TOKENS (inherited from default)
+   ============================================ */
+
+:root[data-theme="cyberpunk"] {
+	/* These are inherited from the base theme in default.css */
+	/* We only override colors and shadows */
+}
+
+/* ============================================
+   LIGHT MODE (Normal Contrast)
+   ============================================ */
+
+:root[data-theme="cyberpunk"][data-mode="light"]:not([data-contrast]),
+:root[data-theme="cyberpunk"][data-mode="light"][data-contrast="normal"],
+:root[data-theme="cyberpunk"]:not([data-mode]):not([data-contrast]),
+:root[data-theme="cyberpunk"]:not([data-mode])[data-contrast="normal"] {
+	/* Backgrounds - Lighter with slight pink tint */
+	--color-bg-primary: hsl(300, 20%, 98%);
+	--color-bg-secondary: hsl(300, 15%, 95%);
+	--color-bg-tertiary: hsl(300, 15%, 92%);
+	--color-bg-elevated: hsl(300, 20%, 100%);
+	--color-bg-inverse: hsl(260, 25%, 8%);
+
+	/* Foreground/Text */
+	--color-fg-primary: hsl(260, 25%, 12%);
+	--color-fg-secondary: hsl(260, 15%, 35%);
+	--color-fg-tertiary: hsl(260, 10%, 55%);
+	--color-fg-disabled: hsl(260, 5%, 70%);
+	--color-fg-inverse: hsl(300, 20%, 98%);
+	--color-fg-on-accent: hsl(0, 0%, 100%);
+
+	/* Borders - Subtle neon hints */
+	--color-border-primary: hsl(300, 30%, 85%);
+	--color-border-secondary: hsl(300, 20%, 90%);
+	--color-border-focus: hsl(195, 100%, 50%);
+	--color-border-hover: hsl(320, 100%, 65%);
+
+	/* Accents - Neon colors */
+	--color-accent-primary: hsl(195, 100%, 45%); /* Cyan */
+	--color-accent-primary-hover: hsl(195, 100%, 40%);
+	--color-accent-primary-active: hsl(195, 100%, 35%);
+	--color-accent-secondary: hsl(320, 100%, 55%); /* Hot pink */
+	--color-accent-tertiary: hsl(150, 100%, 45%); /* Neon green */
+
+	/* Semantic colors with cyber tints */
+	--color-success-text: hsl(150, 100%, 25%);
+	--color-success-bg: hsl(150, 100%, 95%);
+	--color-success-border: hsl(150, 100%, 80%);
+	--color-success-primary: hsl(150, 100%, 40%);
+
+	--color-warning-text: hsl(45, 100%, 30%);
+	--color-warning-bg: hsl(45, 100%, 95%);
+	--color-warning-border: hsl(45, 100%, 80%);
+	--color-warning-primary: hsl(45, 100%, 50%);
+
+	--color-error-text: hsl(340, 100%, 35%);
+	--color-error-bg: hsl(340, 100%, 97%);
+	--color-error-border: hsl(340, 100%, 85%);
+	--color-error-primary: hsl(340, 100%, 55%);
+
+	--color-info-text: hsl(195, 100%, 30%);
+	--color-info-bg: hsl(195, 100%, 96%);
+	--color-info-border: hsl(195, 100%, 85%);
+	--color-info-primary: hsl(195, 100%, 45%);
+
+	/* Shadows with cyan/pink tint */
+	--shadow-sm: 0 1px 2px 0 rgb(0 255 255 / 0.1);
+	--shadow-md: 0 4px 6px -1px rgb(0 255 255 / 0.15),
+		0 2px 4px -2px rgb(255 0 255 / 0.1);
+	--shadow-lg: 0 10px 15px -3px rgb(0 255 255 / 0.2),
+		0 4px 6px -4px rgb(255 0 255 / 0.15);
+	--shadow-xl: 0 20px 25px -5px rgb(0 255 255 / 0.25),
+		0 8px 10px -6px rgb(255 0 255 / 0.2);
+
+	/* Surfaces with neon glow */
+	--surface-overlay: rgb(0 0 0 / 0.6);
+	--surface-glass: rgb(255 255 255 / 0.7);
+}
+
+/* ============================================
+   LIGHT MODE (High Contrast)
+   ============================================ */
+
+:root[data-theme="cyberpunk"][data-mode="light"][data-contrast="high"] {
+	--color-bg-primary: hsl(0, 0%, 100%);
+	--color-bg-secondary: hsl(300, 10%, 98%);
+	--color-bg-tertiary: hsl(300, 10%, 95%);
+	--color-bg-elevated: hsl(0, 0%, 100%);
+	--color-bg-inverse: hsl(260, 30%, 5%);
+
+	--color-fg-primary: hsl(260, 30%, 8%);
+	--color-fg-secondary: hsl(260, 25%, 25%);
+	--color-fg-tertiary: hsl(260, 15%, 40%);
+	--color-fg-disabled: hsl(260, 10%, 55%);
+	--color-fg-inverse: hsl(0, 0%, 100%);
+	--color-fg-on-accent: hsl(0, 0%, 100%);
+
+	--color-border-primary: hsl(260, 40%, 30%);
+	--color-border-secondary: hsl(260, 30%, 50%);
+	--color-border-focus: hsl(195, 100%, 40%);
+	--color-border-hover: hsl(320, 100%, 50%);
+
+	--color-accent-primary: hsl(195, 100%, 40%);
+	--color-accent-primary-hover: hsl(195, 100%, 35%);
+	--color-accent-primary-active: hsl(195, 100%, 30%);
+	--color-accent-secondary: hsl(320, 100%, 45%);
+	--color-accent-tertiary: hsl(150, 100%, 35%);
+}
+
+/* ============================================
+   DIM MODE (Normal Contrast)
+   ============================================ */
+
+:root[data-theme="cyberpunk"][data-mode="dim"]:not([data-contrast]),
+:root[data-theme="cyberpunk"][data-mode="dim"][data-contrast="normal"] {
+	/* Backgrounds - Deep purple-blue */
+	--color-bg-primary: hsl(260, 25%, 12%);
+	--color-bg-secondary: hsl(260, 25%, 15%);
+	--color-bg-tertiary: hsl(260, 25%, 18%);
+	--color-bg-elevated: hsl(260, 25%, 15%);
+	--color-bg-inverse: hsl(300, 20%, 98%);
+
+	/* Foreground/Text */
+	--color-fg-primary: hsl(195, 100%, 85%); /* Cyan tinted text */
+	--color-fg-secondary: hsl(195, 60%, 70%);
+	--color-fg-tertiary: hsl(195, 40%, 55%);
+	--color-fg-disabled: hsl(195, 20%, 40%);
+	--color-fg-inverse: hsl(260, 25%, 12%);
+	--color-fg-on-accent: hsl(0, 0%, 100%);
+
+	/* Borders with neon glow */
+	--color-border-primary: hsl(195, 80%, 35%);
+	--color-border-secondary: hsl(260, 30%, 25%);
+	--color-border-focus: hsl(195, 100%, 60%);
+	--color-border-hover: hsl(320, 100%, 65%);
+
+	/* Bright neon accents */
+	--color-accent-primary: hsl(195, 100%, 60%);
+	--color-accent-primary-hover: hsl(195, 100%, 65%);
+	--color-accent-primary-active: hsl(195, 100%, 70%);
+	--color-accent-secondary: hsl(320, 100%, 65%);
+	--color-accent-tertiary: hsl(150, 100%, 55%);
+
+	/* Semantic with neon glow */
+	--color-success-text: hsl(150, 100%, 70%);
+	--color-success-bg: hsl(150, 100%, 8%);
+	--color-success-border: hsl(150, 100%, 40%);
+	--color-success-primary: hsl(150, 100%, 55%);
+
+	--color-warning-text: hsl(45, 100%, 70%);
+	--color-warning-bg: hsl(45, 100%, 8%);
+	--color-warning-border: hsl(45, 100%, 40%);
+	--color-warning-primary: hsl(45, 100%, 60%);
+
+	--color-error-text: hsl(340, 100%, 70%);
+	--color-error-bg: hsl(340, 100%, 8%);
+	--color-error-border: hsl(340, 100%, 40%);
+	--color-error-primary: hsl(340, 100%, 65%);
+
+	--color-info-text: hsl(195, 100%, 70%);
+	--color-info-bg: hsl(195, 100%, 8%);
+	--color-info-border: hsl(195, 100%, 40%);
+	--color-info-primary: hsl(195, 100%, 60%);
+
+	/* Strong neon shadows */
+	--shadow-sm: 0 1px 3px 0 rgb(0 255 255 / 0.4),
+		0 0 8px 0 rgb(0 255 255 / 0.2);
+	--shadow-md: 0 4px 8px -1px rgb(0 255 255 / 0.5),
+		0 0 12px 0 rgb(255 0 255 / 0.3);
+	--shadow-lg: 0 10px 20px -3px rgb(0 255 255 / 0.6),
+		0 0 20px 0 rgb(255 0 255 / 0.4);
+	--shadow-xl: 0 20px 30px -5px rgb(0 255 255 / 0.7),
+		0 0 30px 0 rgb(255 0 255 / 0.5);
+
+	--surface-overlay: rgb(20 10 40 / 0.85);
+	--surface-glass: rgb(38 20 58 / 0.8);
+}
+
+/* ============================================
+   DIM MODE (High Contrast)
+   ============================================ */
+
+:root[data-theme="cyberpunk"][data-mode="dim"][data-contrast="high"] {
+	--color-bg-primary: hsl(260, 30%, 8%);
+	--color-bg-secondary: hsl(260, 30%, 11%);
+	--color-bg-tertiary: hsl(260, 30%, 14%);
+	--color-bg-elevated: hsl(260, 30%, 11%);
+	--color-bg-inverse: hsl(0, 0%, 100%);
+
+	--color-fg-primary: hsl(195, 100%, 95%);
+	--color-fg-secondary: hsl(195, 80%, 80%);
+	--color-fg-tertiary: hsl(195, 60%, 65%);
+	--color-fg-disabled: hsl(195, 30%, 50%);
+	--color-fg-inverse: hsl(260, 30%, 8%);
+	--color-fg-on-accent: hsl(0, 0%, 100%);
+
+	--color-border-primary: hsl(195, 100%, 50%);
+	--color-border-secondary: hsl(195, 80%, 35%);
+	--color-border-focus: hsl(195, 100%, 70%);
+	--color-border-hover: hsl(320, 100%, 70%);
+
+	--color-accent-primary: hsl(195, 100%, 65%);
+	--color-accent-primary-hover: hsl(195, 100%, 70%);
+	--color-accent-primary-active: hsl(195, 100%, 75%);
+	--color-accent-secondary: hsl(320, 100%, 70%);
+	--color-accent-tertiary: hsl(150, 100%, 60%);
+}
+
+/* ============================================
+   DARK MODE (Normal Contrast)
+   ============================================ */
+
+:root[data-theme="cyberpunk"][data-mode="dark"]:not([data-contrast]),
+:root[data-theme="cyberpunk"][data-mode="dark"][data-contrast="normal"] {
+	/* Backgrounds - Very deep purple-black */
+	--color-bg-primary: hsl(260, 30%, 8%);
+	--color-bg-secondary: hsl(260, 30%, 10%);
+	--color-bg-tertiary: hsl(260, 30%, 13%);
+	--color-bg-elevated: hsl(260, 30%, 10%);
+	--color-bg-inverse: hsl(300, 20%, 98%);
+
+	/* Foreground/Text with electric blue tint */
+	--color-fg-primary: hsl(195, 100%, 90%);
+	--color-fg-secondary: hsl(195, 70%, 75%);
+	--color-fg-tertiary: hsl(195, 50%, 60%);
+	--color-fg-disabled: hsl(195, 30%, 45%);
+	--color-fg-inverse: hsl(260, 30%, 8%);
+	--color-fg-on-accent: hsl(0, 0%, 100%);
+
+	/* Borders with intense neon */
+	--color-border-primary: hsl(195, 100%, 40%);
+	--color-border-secondary: hsl(260, 40%, 20%);
+	--color-border-focus: hsl(195, 100%, 55%);
+	--color-border-hover: hsl(320, 100%, 60%);
+
+	/* Maximum neon accents */
+	--color-accent-primary: hsl(195, 100%, 55%);
+	--color-accent-primary-hover: hsl(195, 100%, 60%);
+	--color-accent-primary-active: hsl(195, 100%, 65%);
+	--color-accent-secondary: hsl(320, 100%, 60%);
+	--color-accent-tertiary: hsl(150, 100%, 50%);
+
+	/* Semantic with maximum glow */
+	--color-success-text: hsl(150, 100%, 75%);
+	--color-success-bg: hsl(150, 100%, 6%);
+	--color-success-border: hsl(150, 100%, 35%);
+	--color-success-primary: hsl(150, 100%, 50%);
+
+	--color-warning-text: hsl(45, 100%, 75%);
+	--color-warning-bg: hsl(45, 100%, 6%);
+	--color-warning-border: hsl(45, 100%, 35%);
+	--color-warning-primary: hsl(45, 100%, 55%);
+
+	--color-error-text: hsl(340, 100%, 75%);
+	--color-error-bg: hsl(340, 100%, 6%);
+	--color-error-border: hsl(340, 100%, 35%);
+	--color-error-primary: hsl(340, 100%, 60%);
+
+	--color-info-text: hsl(195, 100%, 75%);
+	--color-info-bg: hsl(195, 100%, 6%);
+	--color-info-border: hsl(195, 100%, 35%);
+	--color-info-primary: hsl(195, 100%, 55%);
+
+	/* Extreme neon glow shadows */
+	--shadow-sm: 0 1px 4px 0 rgb(0 255 255 / 0.5),
+		0 0 12px 0 rgb(0 255 255 / 0.3);
+	--shadow-md: 0 4px 10px -1px rgb(0 255 255 / 0.6),
+		0 0 16px 0 rgb(255 0 255 / 0.4);
+	--shadow-lg: 0 10px 25px -3px rgb(0 255 255 / 0.7),
+		0 0 25px 0 rgb(255 0 255 / 0.5);
+	--shadow-xl: 0 20px 35px -5px rgb(0 255 255 / 0.8),
+		0 0 40px 0 rgb(255 0 255 / 0.6);
+
+	--surface-overlay: rgb(15 5 30 / 0.9);
+	--surface-glass: rgb(26 13 40 / 0.85);
+}
+
+/* ============================================
+   DARK MODE (High Contrast)
+   ============================================ */
+
+:root[data-theme="cyberpunk"][data-mode="dark"][data-contrast="high"] {
+	--color-bg-primary: hsl(260, 40%, 3%);
+	--color-bg-secondary: hsl(260, 35%, 6%);
+	--color-bg-tertiary: hsl(260, 30%, 9%);
+	--color-bg-elevated: hsl(260, 35%, 6%);
+	--color-bg-inverse: hsl(0, 0%, 100%);
+
+	--color-fg-primary: hsl(195, 100%, 98%);
+	--color-fg-secondary: hsl(195, 90%, 85%);
+	--color-fg-tertiary: hsl(195, 70%, 70%);
+	--color-fg-disabled: hsl(195, 40%, 55%);
+	--color-fg-inverse: hsl(260, 40%, 3%);
+	--color-fg-on-accent: hsl(0, 0%, 100%);
+
+	--color-border-primary: hsl(195, 100%, 60%);
+	--color-border-secondary: hsl(195, 80%, 45%);
+	--color-border-focus: hsl(195, 100%, 75%);
+	--color-border-hover: hsl(320, 100%, 75%);
+
+	--color-accent-primary: hsl(195, 100%, 60%);
+	--color-accent-primary-hover: hsl(195, 100%, 65%);
+	--color-accent-primary-active: hsl(195, 100%, 70%);
+	--color-accent-secondary: hsl(320, 100%, 65%);
+	--color-accent-tertiary: hsl(150, 100%, 55%);
+}
+

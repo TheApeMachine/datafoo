@@ -1,0 +1,292 @@
+/**
+ * Glassmorphism Theme
+ *
+ * A modern, elegant theme featuring frosted glass effects, soft blurs, and subtle transparency.
+ * Emphasizes depth through layering and backdrop filters.
+ *
+ * Supports 3 modes (light, dim, dark) × 2 contrast levels (normal, high) = 6 variations
+ */
+
+/* ============================================
+   LIGHT MODE (Normal Contrast)
+   ============================================ */
+
+:root[data-theme="glassmorphism"][data-mode="light"]:not([data-contrast]),
+:root[data-theme="glassmorphism"][data-mode="light"][data-contrast="normal"],
+:root[data-theme="glassmorphism"]:not([data-mode]):not([data-contrast]),
+:root[data-theme="glassmorphism"]:not([data-mode])[data-contrast="normal"] {
+	/* Backgrounds - Light with glass effect */
+	--color-bg-primary: hsl(220, 40%, 96%);
+	--color-bg-secondary: hsl(220, 35%, 90%);
+	--color-bg-tertiary: hsl(220, 30%, 85%);
+	--color-bg-elevated: hsl(0, 0%, 100%);
+	--color-bg-inverse: hsl(220, 40%, 8%);
+
+	/* Foreground/Text */
+	--color-fg-primary: hsl(220, 30%, 15%);
+	--color-fg-secondary: hsl(220, 20%, 40%);
+	--color-fg-tertiary: hsl(220, 15%, 55%);
+	--color-fg-disabled: hsl(220, 10%, 70%);
+	--color-fg-inverse: hsl(220, 40%, 96%);
+	--color-fg-on-accent: hsl(0, 0%, 100%);
+
+	/* Borders - Subtle, glass-like */
+	--color-border-primary: hsl(220, 20%, 80%);
+	--color-border-secondary: hsl(220, 15%, 88%);
+	--color-border-focus: hsl(217, 80%, 55%);
+	--color-border-hover: hsl(220, 25%, 70%);
+
+	/* Accents - Soft, elegant colors */
+	--color-accent-primary: hsl(217, 80%, 55%);
+	--color-accent-primary-hover: hsl(217, 80%, 50%);
+	--color-accent-primary-active: hsl(217, 80%, 45%);
+	--color-accent-secondary: hsl(280, 70%, 60%);
+	--color-accent-tertiary: hsl(170, 70%, 50%);
+
+	/* Semantic colors */
+	--color-success-text: hsl(142, 60%, 30%);
+	--color-success-bg: hsl(142, 60%, 95%);
+	--color-success-border: hsl(142, 60%, 85%);
+	--color-success-primary: hsl(142, 60%, 45%);
+
+	--color-warning-text: hsl(38, 80%, 35%);
+	--color-warning-bg: hsl(38, 80%, 95%);
+	--color-warning-border: hsl(38, 80%, 85%);
+	--color-warning-primary: hsl(38, 80%, 55%);
+
+	--color-error-text: hsl(0, 70%, 40%);
+	--color-error-bg: hsl(0, 70%, 97%);
+	--color-error-border: hsl(0, 70%, 90%);
+	--color-error-primary: hsl(0, 70%, 60%);
+
+	--color-info-text: hsl(199, 80%, 35%);
+	--color-info-bg: hsl(199, 80%, 96%);
+	--color-info-border: hsl(199, 80%, 88%);
+	--color-info-primary: hsl(199, 80%, 50%);
+
+	/* Soft, diffused shadows */
+	--shadow-sm: 0 2px 4px 0 rgb(100 116 139 / 0.06);
+	--shadow-md: 0 8px 16px -4px rgb(100 116 139 / 0.08),
+		0 4px 8px -2px rgb(100 116 139 / 0.06);
+	--shadow-lg: 0 16px 24px -8px rgb(100 116 139 / 0.1),
+		0 8px 12px -4px rgb(100 116 139 / 0.08);
+	--shadow-xl: 0 24px 32px -12px rgb(100 116 139 / 0.12),
+		0 12px 16px -6px rgb(100 116 139 / 0.1);
+
+	/* Glass surfaces */
+	--surface-overlay: rgb(255 255 255 / 0.3);
+	--surface-glass: rgb(255 255 255 / 0.7);
+}
+
+/* ============================================
+   LIGHT MODE (High Contrast)
+   ============================================ */
+
+:root[data-theme="glassmorphism"][data-mode="light"][data-contrast="high"] {
+	--color-bg-primary: hsl(0, 0%, 100%);
+	--color-bg-secondary: hsl(220, 30%, 95%);
+	--color-bg-tertiary: hsl(220, 25%, 90%);
+	--color-bg-elevated: hsl(0, 0%, 100%);
+	--color-bg-inverse: hsl(220, 40%, 5%);
+
+	--color-fg-primary: hsl(220, 40%, 10%);
+	--color-fg-secondary: hsl(220, 30%, 30%);
+	--color-fg-tertiary: hsl(220, 20%, 45%);
+	--color-fg-disabled: hsl(220, 15%, 60%);
+	--color-fg-inverse: hsl(0, 0%, 100%);
+	--color-fg-on-accent: hsl(0, 0%, 100%);
+
+	--color-border-primary: hsl(220, 30%, 40%);
+	--color-border-secondary: hsl(220, 20%, 60%);
+	--color-border-focus: hsl(217, 90%, 45%);
+	--color-border-hover: hsl(220, 35%, 30%);
+}
+
+/* ============================================
+   DIM MODE (Normal Contrast)
+   ============================================ */
+
+:root[data-theme="glassmorphism"][data-mode="dim"]:not([data-contrast]),
+:root[data-theme="glassmorphism"][data-mode="dim"][data-contrast="normal"] {
+	/* Backgrounds - Mid-tone with glass */
+	--color-bg-primary: hsl(220, 30%, 18%);
+	--color-bg-secondary: hsl(220, 28%, 21%);
+	--color-bg-tertiary: hsl(220, 26%, 24%);
+	--color-bg-elevated: hsl(220, 28%, 21%);
+	--color-bg-inverse: hsl(220, 40%, 96%);
+
+	/* Foreground/Text */
+	--color-fg-primary: hsl(220, 30%, 92%);
+	--color-fg-secondary: hsl(220, 20%, 72%);
+	--color-fg-tertiary: hsl(220, 15%, 58%);
+	--color-fg-disabled: hsl(220, 10%, 45%);
+	--color-fg-inverse: hsl(220, 30%, 18%);
+	--color-fg-on-accent: hsl(0, 0%, 100%);
+
+	/* Borders */
+	--color-border-primary: hsl(220, 20%, 35%);
+	--color-border-secondary: hsl(220, 15%, 28%);
+	--color-border-focus: hsl(217, 80%, 60%);
+	--color-border-hover: hsl(220, 25%, 42%);
+
+	/* Accents */
+	--color-accent-primary: hsl(217, 80%, 60%);
+	--color-accent-primary-hover: hsl(217, 80%, 65%);
+	--color-accent-primary-active: hsl(217, 80%, 70%);
+	--color-accent-secondary: hsl(280, 70%, 65%);
+	--color-accent-tertiary: hsl(170, 70%, 55%);
+
+	/* Semantic */
+	--color-success-text: hsl(142, 60%, 70%);
+	--color-success-bg: hsl(142, 60%, 12%);
+	--color-success-border: hsl(142, 60%, 30%);
+	--color-success-primary: hsl(142, 60%, 55%);
+
+	--color-warning-text: hsl(38, 80%, 70%);
+	--color-warning-bg: hsl(38, 80%, 12%);
+	--color-warning-border: hsl(38, 80%, 30%);
+	--color-warning-primary: hsl(38, 80%, 60%);
+
+	--color-error-text: hsl(0, 70%, 70%);
+	--color-error-bg: hsl(0, 70%, 12%);
+	--color-error-border: hsl(0, 70%, 30%);
+	--color-error-primary: hsl(0, 70%, 65%);
+
+	--color-info-text: hsl(199, 80%, 70%);
+	--color-info-bg: hsl(199, 80%, 12%);
+	--color-info-border: hsl(199, 80%, 30%);
+	--color-info-primary: hsl(199, 80%, 58%);
+
+	/* Shadows with more depth */
+	--shadow-sm: 0 2px 6px 0 rgb(0 0 0 / 0.25);
+	--shadow-md: 0 8px 20px -4px rgb(0 0 0 / 0.3), 0 4px 10px -2px rgb(0 0 0 / 0.25);
+	--shadow-lg: 0 16px 32px -8px rgb(0 0 0 / 0.35),
+		0 8px 16px -4px rgb(0 0 0 / 0.3);
+	--shadow-xl: 0 24px 48px -12px rgb(0 0 0 / 0.4),
+		0 12px 24px -6px rgb(0 0 0 / 0.35);
+
+	--surface-overlay: rgb(40 50 70 / 0.5);
+	--surface-glass: rgb(48 58 78 / 0.75);
+}
+
+/* ============================================
+   DIM MODE (High Contrast)
+   ============================================ */
+
+:root[data-theme="glassmorphism"][data-mode="dim"][data-contrast="high"] {
+	--color-bg-primary: hsl(220, 35%, 14%);
+	--color-bg-secondary: hsl(220, 33%, 17%);
+	--color-bg-tertiary: hsl(220, 30%, 20%);
+	--color-bg-elevated: hsl(220, 33%, 17%);
+	--color-bg-inverse: hsl(0, 0%, 100%);
+
+	--color-fg-primary: hsl(220, 30%, 98%);
+	--color-fg-secondary: hsl(220, 25%, 82%);
+	--color-fg-tertiary: hsl(220, 20%, 68%);
+	--color-fg-disabled: hsl(220, 15%, 55%);
+	--color-fg-inverse: hsl(220, 35%, 14%);
+	--color-fg-on-accent: hsl(0, 0%, 100%);
+
+	--color-border-primary: hsl(220, 25%, 50%);
+	--color-border-secondary: hsl(220, 20%, 38%);
+	--color-border-focus: hsl(217, 90%, 65%);
+	--color-border-hover: hsl(220, 30%, 58%);
+}
+
+/* ============================================
+   DARK MODE (Normal Contrast)
+   ============================================ */
+
+:root[data-theme="glassmorphism"][data-mode="dark"]:not([data-contrast]),
+:root[data-theme="glassmorphism"][data-mode="dark"][data-contrast="normal"] {
+	/* Backgrounds - Deep with glass */
+	--color-bg-primary: hsl(220, 35%, 10%);
+	--color-bg-secondary: hsl(220, 33%, 13%);
+	--color-bg-tertiary: hsl(220, 30%, 16%);
+	--color-bg-elevated: hsl(220, 33%, 13%);
+	--color-bg-inverse: hsl(220, 40%, 96%);
+
+	/* Foreground/Text */
+	--color-fg-primary: hsl(220, 30%, 94%);
+	--color-fg-secondary: hsl(220, 20%, 68%);
+	--color-fg-tertiary: hsl(220, 15%, 54%);
+	--color-fg-disabled: hsl(220, 10%, 40%);
+	--color-fg-inverse: hsl(220, 35%, 10%);
+	--color-fg-on-accent: hsl(0, 0%, 100%);
+
+	/* Borders */
+	--color-border-primary: hsl(220, 20%, 30%);
+	--color-border-secondary: hsl(220, 15%, 22%);
+	--color-border-focus: hsl(217, 80%, 60%);
+	--color-border-hover: hsl(220, 25%, 38%);
+
+	/* Accents */
+	--color-accent-primary: hsl(217, 80%, 60%);
+	--color-accent-primary-hover: hsl(217, 80%, 65%);
+	--color-accent-primary-active: hsl(217, 80%, 70%);
+	--color-accent-secondary: hsl(280, 70%, 65%);
+	--color-accent-tertiary: hsl(170, 70%, 55%);
+
+	/* Semantic */
+	--color-success-text: hsl(142, 60%, 72%);
+	--color-success-bg: hsl(142, 60%, 10%);
+	--color-success-border: hsl(142, 60%, 25%);
+	--color-success-primary: hsl(142, 60%, 55%);
+
+	--color-warning-text: hsl(38, 80%, 72%);
+	--color-warning-bg: hsl(38, 80%, 10%);
+	--color-warning-border: hsl(38, 80%, 25%);
+	--color-warning-primary: hsl(38, 80%, 60%);
+
+	--color-error-text: hsl(0, 70%, 72%);
+	--color-error-bg: hsl(0, 70%, 10%);
+	--color-error-border: hsl(0, 70%, 25%);
+	--color-error-primary: hsl(0, 70%, 65%);
+
+	--color-info-text: hsl(199, 80%, 72%);
+	--color-info-bg: hsl(199, 80%, 10%);
+	--color-info-border: hsl(199, 80%, 25%);
+	--color-info-primary: hsl(199, 80%, 58%);
+
+	/* Deep, soft shadows */
+	--shadow-sm: 0 2px 8px 0 rgb(0 0 0 / 0.35);
+	--shadow-md: 0 8px 24px -4px rgb(0 0 0 / 0.4), 0 4px 12px -2px rgb(0 0 0 / 0.35);
+	--shadow-lg: 0 16px 40px -8px rgb(0 0 0 / 0.45),
+		0 8px 20px -4px rgb(0 0 0 / 0.4);
+	--shadow-xl: 0 24px 56px -12px rgb(0 0 0 / 0.5),
+		0 12px 28px -6px rgb(0 0 0 / 0.45);
+
+	--surface-overlay: rgb(25 35 50 / 0.6);
+	--surface-glass: rgb(32 42 58 / 0.8);
+}
+
+/* ============================================
+   DARK MODE (High Contrast)
+   ============================================ */
+
+:root[data-theme="glassmorphism"][data-mode="dark"][data-contrast="high"] {
+	--color-bg-primary: hsl(220, 40%, 5%);
+	--color-bg-secondary: hsl(220, 38%, 8%);
+	--color-bg-tertiary: hsl(220, 35%, 11%);
+	--color-bg-elevated: hsl(220, 38%, 8%);
+	--color-bg-inverse: hsl(0, 0%, 100%);
+
+	--color-fg-primary: hsl(0, 0%, 100%);
+	--color-fg-secondary: hsl(220, 20%, 80%);
+	--color-fg-tertiary: hsl(220, 15%, 65%);
+	--color-fg-disabled: hsl(220, 10%, 50%);
+	--color-fg-inverse: hsl(220, 40%, 5%);
+	--color-fg-on-accent: hsl(0, 0%, 100%);
+
+	--color-border-primary: hsl(220, 25%, 60%);
+	--color-border-secondary: hsl(220, 20%, 45%);
+	--color-border-focus: hsl(217, 90%, 65%);
+	--color-border-hover: hsl(220, 30%, 70%);
+
+	--color-accent-primary: hsl(217, 90%, 65%);
+	--color-accent-primary-hover: hsl(217, 90%, 70%);
+	--color-accent-primary-active: hsl(217, 90%, 75%);
+	--color-accent-secondary: hsl(280, 80%, 70%);
+	--color-accent-tertiary: hsl(170, 80%, 60%);
+}
+

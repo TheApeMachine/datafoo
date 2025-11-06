@@ -1,0 +1,192 @@
+/**
+ * Design Token Structure
+ *
+ * This file documents the token naming convention used across all themes.
+ * Each theme CSS file should define these tokens for all 6 combinations:
+ * - light (normal)
+ * - dim (normal)
+ * - dark (normal)
+ * - light (high-contrast)
+ * - dim (high-contrast)
+ * - dark (high-contrast)
+ *
+ * Token Categories:
+ * - Color tokens: --color-*
+ * - Spacing tokens: --space-*
+ * - Typography tokens: --font-*, --text-*
+ * - Border tokens: --border-*, --radius-*
+ * - Shadow tokens: --shadow-*
+ * - Surface tokens: --surface-*
+ * - Transition tokens: --transition-*
+ * - Z-index tokens: --z-*
+ */
+
+/* ============================================
+   COLOR TOKENS
+   ============================================ */
+
+/**
+ * Background colors
+ * --color-bg-primary: Main background color
+ * --color-bg-secondary: Secondary background (cards, panels)
+ * --color-bg-tertiary: Tertiary background (nested elements)
+ * --color-bg-elevated: Elevated surfaces (modals, dropdowns)
+ * --color-bg-inverse: Inverse background (dark text on light, vice versa)
+ */
+
+/**
+ * Foreground/Text colors
+ * --color-fg-primary: Primary text color
+ * --color-fg-secondary: Secondary text (less emphasis)
+ * --color-fg-tertiary: Tertiary text (least emphasis)
+ * --color-fg-disabled: Disabled text
+ * --color-fg-inverse: Inverse text color
+ * --color-fg-on-accent: Text on accent colors
+ */
+
+/**
+ * Border colors
+ * --color-border-primary: Primary border color
+ * --color-border-secondary: Secondary border (less emphasis)
+ * --color-border-focus: Focus state border
+ * --color-border-hover: Hover state border
+ */
+
+/**
+ * Accent colors (brand colors)
+ * --color-accent-primary: Main brand color
+ * --color-accent-primary-hover: Brand color hover state
+ * --color-accent-primary-active: Brand color active state
+ * --color-accent-secondary: Secondary accent
+ * --color-accent-tertiary: Tertiary accent
+ */
+
+/**
+ * Semantic colors
+ * --color-success-*: Success states (text, bg, border)
+ * --color-warning-*: Warning states
+ * --color-error-*: Error states
+ * --color-info-*: Info states
+ */
+
+/* ============================================
+   SPACING TOKENS
+   ============================================ */
+
+/**
+ * --space-1: 0.25rem (4px)
+ * --space-2: 0.5rem (8px)
+ * --space-3: 0.75rem (12px)
+ * --space-4: 1rem (16px)
+ * --space-6: 1.5rem (24px)
+ * --space-8: 2rem (32px)
+ * --space-12: 3rem (48px)
+ * --space-16: 4rem (64px)
+ */
+
+/* ============================================
+   TYPOGRAPHY TOKENS
+   ============================================ */
+
+/**
+ * Font families
+ * --font-sans: Sans-serif font stack
+ * --font-mono: Monospace font stack
+ */
+
+/**
+ * Font sizes
+ * --text-xs: 0.75rem (12px)
+ * --text-sm: 0.875rem (14px)
+ * --text-base: 1rem (16px)
+ * --text-lg: 1.125rem (18px)
+ * --text-xl: 1.25rem (20px)
+ * --text-2xl: 1.5rem (24px)
+ * --text-3xl: 1.875rem (30px)
+ * --text-4xl: 2.25rem (36px)
+ */
+
+/**
+ * Font weights
+ * --font-normal: 400
+ * --font-medium: 500
+ * --font-semibold: 600
+ * --font-bold: 700
+ */
+
+/**
+ * Line heights
+ * --leading-tight: 1.25
+ * --leading-normal: 1.5
+ * --leading-relaxed: 1.75
+ */
+
+/* ============================================
+   BORDER & RADIUS TOKENS
+   ============================================ */
+
+/**
+ * Border widths
+ * --border-width-1: 1px
+ * --border-width-2: 2px
+ * --border-width-4: 4px
+ */
+
+/**
+ * Border radius
+ * --radius-sm: 0.25rem (4px)
+ * --radius-md: 0.375rem (6px)
+ * --radius-lg: 0.5rem (8px)
+ * --radius-xl: 0.75rem (12px)
+ * --radius-2xl: 1rem (16px)
+ * --radius-full: 9999px
+ */
+
+/* ============================================
+   SHADOW TOKENS
+   ============================================ */
+
+/**
+ * Shadows (adjust per theme)
+ * --shadow-sm: Small shadow
+ * --shadow-md: Medium shadow
+ * --shadow-lg: Large shadow
+ * --shadow-xl: Extra large shadow
+ */
+
+/* ============================================
+   SURFACE TOKENS
+   ============================================ */
+
+/**
+ * Surface opacity/overlay
+ * --surface-overlay: Overlay color with opacity
+ * --surface-glass: Glassmorphism backdrop
+ */
+
+/* ============================================
+   TRANSITION TOKENS
+   ============================================ */
+
+/**
+ * Transition durations and easings
+ * --transition-fast: 150ms
+ * --transition-base: 250ms
+ * --transition-slow: 350ms
+ * --transition-ease: cubic-bezier(0.4, 0, 0.2, 1)
+ */
+
+/* ============================================
+   Z-INDEX TOKENS
+   ============================================ */
+
+/**
+ * Z-index layering
+ * --z-base: 0
+ * --z-dropdown: 1000
+ * --z-sticky: 1100
+ * --z-modal: 1200
+ * --z-popover: 1300
+ * --z-tooltip: 1400
+ */
+

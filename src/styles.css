@@ -1,0 +1,187 @@
+@import "tailwindcss";
+@import "./themes/default.css";
+
+html,
+body {
+	height: 100%;
+	overflow: hidden;
+}
+
+body {
+	position: relative;
+	margin: 0;
+	font-family: var(--font-sans);
+	background-color: var(--color-bg-primary);
+	color: var(--color-fg-primary);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+code {
+	font-family: var(--font-mono);
+}
+
+.root {
+	isolation: isolate;
+}
+
+/* Sidebar CSS Variables */
+:root {
+	--tree-focus-color: hsl(0 90% 66%);
+	--text: light-dark(hsl(0 0% 45%), hsl(0 0% 54%));
+	--header-height: 60px;
+	--sidebar-width: 260px;
+	--panel-color: light-dark(
+		color-mix(in hsl, canvas, canvasText 4%),
+		color-mix(in hsl, #000, canvasText 8%)
+	);
+	--border-color: color-mix(in hsl, canvas, canvasText 30%);
+	--speed: 0.16s;
+	--timing: cubic-bezier(0, 0, 0.58, 1);
+	--duration: 0.18s;
+	--opacity: 0.4;
+	--blur: 10px;
+	--translate: 12px;
+
+    --base: hsl(var(--tint, 214) 80% 27% / calc(var(--alpha, 4) * 1%));
+    --shade: hsl(from var(--base) calc(h + 8) 25 calc(l - 5));
+    --perfect-shadow:
+        0 0 0 1px var(--base),
+        0 1px 1px -0.5px var(--shade),
+        0 3px 3px -1.5px var(--shade),
+        0 6px 6px -3px var(--shade),
+        0 12px 12px -6px var(--base),
+        0 24px 24px -12px var(--base);
+}
+
+/* Tree item hover/focus styles */
+[role="treeitem"]:hover {
+	color: light-dark(hsl(0 0% 20%), hsl(0 0% 90%));
+}
+
+[role="treeitem"]:focus {
+	outline: none;
+	color: light-dark(hsl(0 0% 20%), hsl(0 0% 90%));
+	background-color: light-dark(
+		color-mix(in srgb, var(--tree-focus-color), transparent 90%),
+		color-mix(in srgb, var(--tree-focus-color), transparent 80%)
+	);
+}
+
+[role="treeitem"][aria-current="page"] {
+	color: light-dark(#000, #fff);
+}
+
+/* Tree filtering styles */
+[role="tree"][data-filtering="true"] [role="treeitem"] {
+	opacity: 0.6;
+}
+
+[role="tree"][data-filtering="true"] [role="treeitem"][data-search-match="true"] {
+	opacity: 1;
+	color: light-dark(#000, #fff);
+	background-color: color-mix(in srgb, var(--tree-focus-color), transparent 60%);
+}
+
+[role="tree"][data-filtering="true"] [role="treeitem"][data-search-related="true"] {
+	color: light-dark(hsl(0 0% 20%), hsl(0 0% 100%));
+	background-color: color-mix(in srgb, var(--tree-focus-color), transparent 80%);
+}
+
+[role="tree"][data-filtering="true"] [role="treeitem"]:focus {
+	opacity: 1;
+}
+
+/* Animations */
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+/* Dock animations with scroll-driven CSS */
+@supports (animation-timeline: scroll()) {
+	.dock-item {
+		animation-name: scale-in, scale-out;
+		animation-fill-mode: both;
+		animation-timing-function: ease-in-out;
+		animation-direction: normal, reverse;
+		animation-timeline: view(inline);
+		animation-range: entry 0% entry 150%, exit -50% exit 100%;
+	}
+
+	.dock-vertical .dock-item {
+		animation-timeline: view();
+	}
+
+	@keyframes scale-in {
+		0% { scale: 0.25; }
+	}
+
+	@keyframes scale-out {
+		100% { scale: 1; }
+	}
+
+	.dock-blur .dock-item {
+		animation-name: blur-in, blur-out;
+	}
+
+	@keyframes blur-in {
+		0% {
+			scale: 0.25;
+			filter: blur(24px);
+		}
+	}
+
+	@keyframes blur-out {
+		100% {
+			scale: 1;
+			filter: blur(0);
+		}
+	}
+
+	.dock-parallax .dock-item svg {
+		scale: 1;
+		animation-name: icon-in, icon-out;
+		animation-fill-mode: both;
+		animation-timing-function: ease-in;
+		animation-direction: normal, reverse;
+		animation-timeline: view(inline);
+		animation-range: entry -50% entry 250%, exit -150% exit 150%;
+	}
+
+	@keyframes icon-in {
+		0% { scale: 0; }
+	}
+
+	@keyframes icon-out {
+		100% { scale: 1; }
+	}
+}
+
+/* Custom scrollbar styling */
+.scrollbar-thin {
+	scrollbar-width: thin;
+	scrollbar-color: hsl(0 0% 10% / 0.5) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+	background: hsl(0 0% 10% / 0.5);
+	border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+	background: hsl(0 0% 10% / 0.7);
+}

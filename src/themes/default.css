@@ -1,0 +1,658 @@
+/**
+ * Default Theme
+ *
+ * A clean, modern design with subtle shadows and good contrast.
+ * Supports 3 modes (light, dim, dark) × 2 contrast levels (normal, high) = 6 variations
+ *
+ * Mode selection: data-mode="light" | "dim" | "dark" (default: light)
+ * Contrast: data-contrast="normal" | "high" (default: normal)
+ */
+
+/* ============================================
+   BASE TOKENS (Mode-independent)
+   ============================================ */
+
+@theme inline {
+    --color-primary: var(--color-bg-primary);
+    --color-secondary: var(--color-bg-secondary);
+    --color-tertiary: var(--color-bg-tertiary);
+    --color-elevated: var(--color-bg-elevated);
+    --color-inverse: var(--color-bg-inverse);
+
+    --color-fg-primary: var(--color-fg-primary);
+    --color-fg-secondary: var(--color-fg-secondary);
+    --color-fg-tertiary: var(--color-fg-tertiary);
+    --color-fg-disabled: var(--color-fg-disabled);
+    --color-fg-inverse: var(--color-fg-inverse);
+    --color-fg-on-accent: var(--color-fg-on-accent);
+
+    --color-border-primary: var(--color-border-primary);
+    --color-border-secondary: var(--color-border-secondary);
+    --color-border-focus: var(--color-border-focus);
+    --color-border-hover: var(--color-border-hover);
+
+    --color-accent: var(--color-accent-primary);
+    --color-accent-hover: var(--color-accent-primary-hover);
+    --color-accent-active: var(--color-accent-primary-active);
+    --color-accent-secondary: var(--color-accent-secondary);
+    --color-accent-tertiary: var(--color-accent-tertiary);
+
+    --color-success: var(--color-success-primary);
+    --color-success-text: var(--color-success-text);
+    --color-success-bg: var(--color-success-bg);
+    --color-success-border: var(--color-success-border);
+
+    --color-warning: var(--color-warning-primary);
+    --color-warning-text: var(--color-warning-text);
+    --color-warning-bg: var(--color-warning-bg);
+    --color-warning-border: var(--color-warning-border);
+
+    --color-error: var(--color-error-primary);
+    --color-error-text: var(--color-error-text);
+    --color-error-bg: var(--color-error-bg);
+    --color-error-border: var(--color-error-border);
+
+    --color-info: var(--color-info-primary);
+    --color-info-text: var(--color-info-text);
+    --color-info-bg: var(--color-info-bg);
+    --color-info-border: var(--color-info-border);
+
+    --shadow-sm: var(--shadow-sm);
+    --shadow-md: var(--shadow-md);
+    --shadow-lg: var(--shadow-lg);
+    --shadow-xl: var(--shadow-xl);
+
+    --surface-overlay: var(--surface-overlay);
+    --surface-glass: var(--surface-glass);
+
+    --space-1: var(--space-1);
+    --space-2: var(--space-2);
+    --space-3: var(--space-3);
+    --space-4: var(--space-4);
+    --space-6: var(--space-6);
+    --space-8: var(--space-8);
+    --space-12: var(--space-12);
+    --space-16: var(--space-16);
+    --space-20: var(--space-20);
+    --space-24: var(--space-24);
+
+    --font-sans: var(--font-sans);
+    --font-mono: var(--font-mono);
+
+    --text-xs: var(--text-xs);
+    --text-sm: var(--text-sm);
+    --text-base: var(--text-base);
+    --text-lg: var(--text-lg);
+    --text-xl: var(--text-xl);
+    --text-2xl: var(--text-2xl);
+    --text-3xl: var(--text-3xl);
+    --text-4xl: var(--text-4xl);
+    --text-5xl: var(--text-5xl);
+
+    --font-normal: var(--font-normal);
+    --font-medium: var(--font-medium);
+    --font-semibold: var(--font-semibold);
+    --font-bold: var(--font-bold);
+
+    --leading-tight: var(--leading-tight);
+    --leading-normal: var(--leading-normal);
+    --leading-relaxed: var(--leading-relaxed);
+
+    --border-width-1: var(--border-width-1);
+    --border-width-2: var(--border-width-2);
+    --border-width-4: var(--border-width-4);
+
+    --radius-sm: var(--radius-sm);
+    --radius-md: var(--radius-md);
+    --radius-lg: var(--radius-lg);
+    --radius-xl: var(--radius-xl);
+    --radius-2xl: var(--radius-2xl);
+    --radius-full: var(--radius-full);
+
+    --transition-fast: var(--transition-fast);
+    --transition-base: var(--transition-base);
+    --transition-slow: var(--transition-slow);
+    --transition-ease: var(--transition-ease);
+
+    --z-base: var(--z-base);
+    --z-dropdown: var(--z-dropdown);
+    --z-sticky: var(--z-sticky);
+    --z-modal: var(--z-modal);
+    --z-popover: var(--z-popover);
+    --z-tooltip: var(--z-tooltip);
+}
+
+:root {
+    /* Spacing */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --space-12: 3rem;
+    --space-16: 4rem;
+    --space-20: 5rem;
+    --space-24: 6rem;
+
+    /* Typography */
+    --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+        Arial, sans-serif;
+    --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas,
+        "DejaVu Sans Mono", monospace;
+
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 1.875rem;
+    --text-4xl: 2.25rem;
+    --text-5xl: 3rem;
+
+    --font-normal: 400;
+    --font-medium: 500;
+    --font-semibold: 600;
+    --font-bold: 700;
+
+    --leading-tight: 1.25;
+    --leading-normal: 1.5;
+    --leading-relaxed: 1.75;
+
+    /* Borders */
+    --border-width-1: 1px;
+    --border-width-2: 2px;
+    --border-width-4: 4px;
+
+    --radius-sm: 0.25rem;
+    --radius-md: 0.375rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
+    --radius-2xl: 1rem;
+    --radius-full: 9999px;
+
+    /* Transitions */
+    --transition-fast: 150ms;
+    --transition-base: 250ms;
+    --transition-slow: 350ms;
+    --transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Z-index */
+    --z-base: 0;
+    --z-dropdown: 1000;
+    --z-sticky: 1100;
+    --z-modal: 1200;
+    --z-popover: 1300;
+    --z-tooltip: 1400;
+
+    --toggle-shadow: -0.1px 1px 1px hsl(var(--shadow-color) / 0.39),
+        -0.2px 3.2px 3.1px -0.4px hsl(var(--shadow-color) / 0.36),
+        -0.3px 5.7px 5.5px -0.8px hsl(var(--shadow-color) / 0.34),
+        -0.5px 9.3px 8.9px -1.2px hsl(var(--shadow-color) / 0.32),
+        -0.8px 14.8px 14.2px -1.6px hsl(var(--shadow-color) / 0.29),
+        -1.3px 23.1px 22.2px -2px hsl(var(--shadow-color) / 0.27),
+        -2px 35px 33.7px -2.4px hsl(var(--shadow-color) / 0.24),
+        -2.9px 51.2px 49.2px -2.8px hsl(var(--shadow-color) / 0.22),
+        -4.1px 72.6px 69.8px -3.2px hsl(var(--shadow-color) / 0.2),
+        -5.6px 100px 96.2px -3.6px hsl(var(--shadow-color) / 0.17);
+}
+
+/* ============================================
+LIGHT MODE (Normal Contrast) - DEFAULT
+============================================ */
+
+:root,
+:root[data-mode="light"][data-contrast="normal"],
+:root[data-mode="light"]:not([data-contrast]) {
+    /* Backgrounds */
+    --color-bg-primary: oklch(98.5% 0 0);
+    --color-bg-secondary: oklch(92.2% 0 0);
+    --color-bg-tertiary: oklch(70.8% 0 0);
+    --color-bg-elevated: oklch(98.5% 0 0);
+    --color-bg-inverse: oklch(14.5% 0 0);
+
+    /* Foreground/Text */
+    --color-fg-primary: oklch(14.5% 0 0);
+    --color-fg-secondary: oklch(26.9% 0 0);
+    --color-fg-tertiary: oklch(43.9% 0 0);
+    --color-fg-disabled: oklch(70.8% 0 0);
+    --color-fg-inverse: oklch(98.5% 0 0);
+    --color-fg-on-accent: oklch(98.5% 0 0);
+
+    /* Borders */
+    --color-border-primary: oklch(97% 0 0);
+    --color-border-secondary: oklch(87% 0 0);
+    --color-border-focus: oklch(60.6% 0.25 292.717);
+    --color-border-hover: oklch(37.1% 0 0);
+
+    /* Accents */
+    --color-accent-primary: oklch(60.6% 0.25 292.717);
+    --color-accent-primary-hover: oklch(54.1% 0.281 293.009);
+    --color-accent-primary-active: oklch(70.2% 0.183 293.541);
+    --color-accent-secondary: oklch(82.8% 0.189 84.429);
+    --color-accent-tertiary: oklch(77.7% 0.152 181.912);
+
+    /* Semantic - Success */
+    --color-success-text: hsl(142, 71%, 25%);
+    --color-success-bg: hsl(142, 76%, 95%);
+    --color-success-border: hsl(142, 76%, 85%);
+    --color-success-primary: hsl(142, 71%, 45%);
+
+    /* Semantic - Warning */
+    --color-warning-text: hsl(38, 92%, 30%);
+    --color-warning-bg: hsl(38, 92%, 95%);
+    --color-warning-border: hsl(38, 92%, 85%);
+    --color-warning-primary: hsl(38, 92%, 50%);
+
+    /* Semantic - Error */
+    --color-error-text: hsl(0, 84%, 35%);
+    --color-error-bg: hsl(0, 84%, 97%);
+    --color-error-border: hsl(0, 84%, 90%);
+    --color-error-primary: hsl(0, 84%, 60%);
+
+    /* Semantic - Info */
+    --color-info-text: hsl(199, 89%, 30%);
+    --color-info-bg: hsl(199, 89%, 96%);
+    --color-info-border: hsl(199, 89%, 88%);
+    --color-info-primary: hsl(199, 89%, 48%);
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+        0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1),
+        0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+    /* Surfaces */
+    --surface-overlay: rgb(0 0 0 / 0.5);
+    --surface-glass: rgb(255 255 255 / 0.8);
+}
+
+/* ============================================
+LIGHT MODE (High Contrast)
+============================================ */
+
+:root[data-mode="light"][data-contrast="high"] {
+    /* Backgrounds */
+    --color-bg-primary: hsl(0, 0%, 100%);
+    --color-bg-secondary: hsl(0, 0%, 100%);
+    --color-bg-tertiary: hsl(0, 0%, 98%);
+    --color-bg-elevated: hsl(0, 0%, 100%);
+    --color-bg-inverse: hsl(0, 0%, 0%);
+
+    /* Foreground/Text */
+    --color-fg-primary: hsl(0, 0%, 0%);
+    --color-fg-secondary: hsl(0, 0%, 20%);
+    --color-fg-tertiary: hsl(0, 0%, 35%);
+    --color-fg-disabled: hsl(0, 0%, 50%);
+    --color-fg-inverse: hsl(0, 0%, 100%);
+    --color-fg-on-accent: hsl(0, 0%, 100%);
+
+    /* Borders - Stronger */
+    --color-border-primary: hsl(0, 0%, 30%);
+    --color-border-secondary: hsl(0, 0%, 50%);
+    --color-border-focus: hsl(217, 100%, 40%);
+    --color-border-hover: hsl(0, 0%, 15%);
+
+    /* Accents - More saturated */
+    --color-accent-primary: hsl(217, 100%, 50%);
+    --color-accent-primary-hover: hsl(217, 100%, 40%);
+    --color-accent-primary-active: hsl(217, 100%, 30%);
+    --color-accent-secondary: hsl(262, 100%, 50%);
+    --color-accent-tertiary: hsl(340, 100%, 45%);
+
+    /* Semantic - Higher contrast */
+    --color-success-text: hsl(142, 100%, 20%);
+    --color-success-bg: hsl(142, 100%, 97%);
+    --color-success-border: hsl(142, 100%, 30%);
+    --color-success-primary: hsl(142, 100%, 35%);
+
+    --color-warning-text: hsl(38, 100%, 25%);
+    --color-warning-bg: hsl(38, 100%, 97%);
+    --color-warning-border: hsl(38, 100%, 35%);
+    --color-warning-primary: hsl(38, 100%, 40%);
+
+    --color-error-text: hsl(0, 100%, 30%);
+    --color-error-bg: hsl(0, 100%, 98%);
+    --color-error-border: hsl(0, 100%, 40%);
+    --color-error-primary: hsl(0, 100%, 50%);
+
+    --color-info-text: hsl(199, 100%, 25%);
+    --color-info-bg: hsl(199, 100%, 97%);
+    --color-info-border: hsl(199, 100%, 35%);
+    --color-info-primary: hsl(199, 100%, 40%);
+
+    /* Shadows - Stronger */
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.2);
+    --shadow-md: 0 4px 8px -1px rgb(0 0 0 / 0.2), 0 2px 6px -2px rgb(0 0 0 / 0.15);
+    --shadow-lg: 0 10px 20px -3px rgb(0 0 0 / 0.2),
+        0 4px 8px -4px rgb(0 0 0 / 0.15);
+    --shadow-xl: 0 20px 30px -5px rgb(0 0 0 / 0.2),
+        0 8px 12px -6px rgb(0 0 0 / 0.15);
+}
+
+/* ============================================
+DIM MODE (Normal Contrast)
+============================================ */
+
+:root[data-mode="dim"]:not([data-contrast]),
+:root[data-mode="dim"][data-contrast="normal"] {
+    /* Backgrounds */
+    --color-bg-primary: hsl(220, 13%, 15%);
+    --color-bg-secondary: hsl(220, 13%, 18%);
+    --color-bg-tertiary: hsl(220, 13%, 21%);
+    --color-bg-elevated: hsl(220, 13%, 18%);
+    --color-bg-inverse: hsl(0, 0%, 98%);
+
+    /* Foreground/Text */
+    --color-fg-primary: hsl(0, 0%, 95%);
+    --color-fg-secondary: hsl(0, 0%, 70%);
+    --color-fg-tertiary: hsl(0, 0%, 55%);
+    --color-fg-disabled: hsl(0, 0%, 40%);
+    --color-fg-inverse: hsl(0, 0%, 9%);
+    --color-fg-on-accent: hsl(0, 0%, 100%);
+
+    /* Borders */
+    --color-border-primary: hsl(220, 13%, 30%);
+    --color-border-secondary: hsl(220, 13%, 25%);
+    --color-border-focus: hsl(217, 91%, 65%);
+    --color-border-hover: hsl(220, 13%, 40%);
+
+    /* Accents */
+    --color-accent-primary: hsl(217, 91%, 65%);
+    --color-accent-primary-hover: hsl(217, 91%, 70%);
+    --color-accent-primary-active: hsl(217, 91%, 75%);
+    --color-accent-secondary: hsl(262, 83%, 65%);
+    --color-accent-tertiary: hsl(340, 82%, 60%);
+
+    /* Semantic - Success */
+    --color-success-text: hsl(142, 71%, 75%);
+    --color-success-bg: hsl(142, 76%, 10%);
+    --color-success-border: hsl(142, 76%, 25%);
+    --color-success-primary: hsl(142, 71%, 55%);
+
+    /* Semantic - Warning */
+    --color-warning-text: hsl(38, 92%, 75%);
+    --color-warning-bg: hsl(38, 92%, 10%);
+    --color-warning-border: hsl(38, 92%, 25%);
+    --color-warning-primary: hsl(38, 92%, 60%);
+
+    /* Semantic - Error */
+    --color-error-text: hsl(0, 84%, 75%);
+    --color-error-bg: hsl(0, 84%, 10%);
+    --color-error-border: hsl(0, 84%, 25%);
+    --color-error-primary: hsl(0, 84%, 65%);
+
+    /* Semantic - Info */
+    --color-info-text: hsl(199, 89%, 75%);
+    --color-info-bg: hsl(199, 89%, 10%);
+    --color-info-border: hsl(199, 89%, 25%);
+    --color-info-primary: hsl(199, 89%, 58%);
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4),
+        0 4px 6px -4px rgb(0 0 0 / 0.3);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4),
+        0 8px 10px -6px rgb(0 0 0 / 0.3);
+
+    /* Surfaces */
+    --surface-overlay: rgb(0 0 0 / 0.7);
+    --surface-glass: rgb(34 38 46 / 0.8);
+}
+
+/* ============================================
+DIM MODE (High Contrast)
+============================================ */
+
+:root[data-mode="dim"][data-contrast="high"] {
+    /* Backgrounds */
+    --color-bg-primary: hsl(220, 13%, 12%);
+    --color-bg-secondary: hsl(220, 13%, 15%);
+    --color-bg-tertiary: hsl(220, 13%, 18%);
+    --color-bg-elevated: hsl(220, 13%, 15%);
+    --color-bg-inverse: hsl(0, 0%, 100%);
+
+    /* Foreground/Text */
+    --color-fg-primary: hsl(0, 0%, 100%);
+    --color-fg-secondary: hsl(0, 0%, 85%);
+    --color-fg-tertiary: hsl(0, 0%, 70%);
+    --color-fg-disabled: hsl(0, 0%, 50%);
+    --color-fg-inverse: hsl(0, 0%, 0%);
+    --color-fg-on-accent: hsl(0, 0%, 100%);
+
+    /* Borders - Stronger */
+    --color-border-primary: hsl(220, 13%, 50%);
+    --color-border-secondary: hsl(220, 13%, 40%);
+    --color-border-focus: hsl(217, 100%, 70%);
+    --color-border-hover: hsl(220, 13%, 60%);
+
+    /* Accents - More saturated */
+    --color-accent-primary: hsl(217, 100%, 70%);
+    --color-accent-primary-hover: hsl(217, 100%, 75%);
+    --color-accent-primary-active: hsl(217, 100%, 80%);
+    --color-accent-secondary: hsl(262, 100%, 70%);
+    --color-accent-tertiary: hsl(340, 100%, 65%);
+
+    /* Semantic - Higher contrast */
+    --color-success-text: hsl(142, 100%, 80%);
+    --color-success-bg: hsl(142, 100%, 8%);
+    --color-success-border: hsl(142, 100%, 40%);
+    --color-success-primary: hsl(142, 100%, 60%);
+
+    --color-warning-text: hsl(38, 100%, 80%);
+    --color-warning-bg: hsl(38, 100%, 8%);
+    --color-warning-border: hsl(38, 100%, 40%);
+    --color-warning-primary: hsl(38, 100%, 65%);
+
+    --color-error-text: hsl(0, 100%, 80%);
+    --color-error-bg: hsl(0, 100%, 8%);
+    --color-error-border: hsl(0, 100%, 40%);
+    --color-error-primary: hsl(0, 100%, 70%);
+
+    --color-info-text: hsl(199, 100%, 80%);
+    --color-info-bg: hsl(199, 100%, 8%);
+    --color-info-border: hsl(199, 100%, 40%);
+    --color-info-primary: hsl(199, 100%, 65%);
+}
+
+/* ============================================
+DARK MODE (Normal Contrast)
+============================================ */
+
+:root[data-mode="dark"]:not([data-contrast]),
+:root[data-mode="dark"][data-contrast="normal"] {
+    /* Backgrounds */
+    --color-bg-primary: hsl(0, 0%, 9%);
+    --color-bg-secondary: hsl(0, 0%, 11%);
+    --color-bg-tertiary: hsl(0, 0%, 14%);
+    --color-bg-elevated: hsl(0, 0%, 11%);
+    --color-bg-inverse: hsl(0, 0%, 98%);
+
+    /* Foreground/Text */
+    --color-fg-primary: hsl(0, 0%, 95%);
+    --color-fg-secondary: hsl(0, 0%, 65%);
+    --color-fg-tertiary: hsl(0, 0%, 50%);
+    --color-fg-disabled: hsl(0, 0%, 35%);
+    --color-fg-inverse: hsl(0, 0%, 9%);
+    --color-fg-on-accent: hsl(0, 0%, 100%);
+
+    /* Borders */
+    --color-border-primary: hsl(0, 0%, 25%);
+    --color-border-secondary: hsl(0, 0%, 20%);
+    --color-border-focus: hsl(217, 91%, 65%);
+    --color-border-hover: hsl(0, 0%, 35%);
+
+    /* Accents */
+    --color-accent-primary: hsl(217, 91%, 65%);
+    --color-accent-primary-hover: hsl(217, 91%, 70%);
+    --color-accent-primary-active: hsl(217, 91%, 75%);
+    --color-accent-secondary: hsl(262, 83%, 65%);
+    --color-accent-tertiary: hsl(340, 82%, 60%);
+
+    /* Semantic - Success */
+    --color-success-text: hsl(142, 71%, 75%);
+    --color-success-bg: hsl(142, 76%, 8%);
+    --color-success-border: hsl(142, 76%, 20%);
+    --color-success-primary: hsl(142, 71%, 55%);
+
+    /* Semantic - Warning */
+    --color-warning-text: hsl(38, 92%, 75%);
+    --color-warning-bg: hsl(38, 92%, 8%);
+    --color-warning-border: hsl(38, 92%, 20%);
+    --color-warning-primary: hsl(38, 92%, 60%);
+
+    /* Semantic - Error */
+    --color-error-text: hsl(0, 84%, 75%);
+    --color-error-bg: hsl(0, 84%, 8%);
+    --color-error-border: hsl(0, 84%, 20%);
+    --color-error-primary: hsl(0, 84%, 65%);
+
+    /* Semantic - Info */
+    --color-info-text: hsl(199, 89%, 75%);
+    --color-info-bg: hsl(199, 89%, 8%);
+    --color-info-border: hsl(199, 89%, 20%);
+    --color-info-primary: hsl(199, 89%, 58%);
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.6), 0 2px 4px -2px rgb(0 0 0 / 0.5);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.6),
+        0 4px 6px -4px rgb(0 0 0 / 0.5);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.6),
+        0 8px 10px -6px rgb(0 0 0 / 0.5);
+
+    /* Surfaces */
+    --surface-overlay: rgb(0 0 0 / 0.8);
+    --surface-glass: rgb(23 23 23 / 0.8);
+}
+
+/* ============================================
+DARK MODE (High Contrast)
+============================================ */
+
+:root[data-mode="dark"][data-contrast="high"] {
+    /* Backgrounds */
+    --color-bg-primary: hsl(0, 0%, 0%);
+    --color-bg-secondary: hsl(0, 0%, 5%);
+    --color-bg-tertiary: hsl(0, 0%, 10%);
+    --color-bg-elevated: hsl(0, 0%, 5%);
+    --color-bg-inverse: hsl(0, 0%, 100%);
+
+    /* Foreground/Text */
+    --color-fg-primary: hsl(0, 0%, 100%);
+    --color-fg-secondary: hsl(0, 0%, 80%);
+    --color-fg-tertiary: hsl(0, 0%, 65%);
+    --color-fg-disabled: hsl(0, 0%, 50%);
+    --color-fg-inverse: hsl(0, 0%, 0%);
+    --color-fg-on-accent: hsl(0, 0%, 100%);
+
+    /* Borders - Stronger */
+    --color-border-primary: hsl(0, 0%, 70%);
+    --color-border-secondary: hsl(0, 0%, 50%);
+    --color-border-focus: hsl(217, 100%, 70%);
+    --color-border-hover: hsl(0, 0%, 80%);
+
+    /* Accents - More saturated */
+    --color-accent-primary: hsl(217, 100%, 70%);
+    --color-accent-primary-hover: hsl(217, 100%, 75%);
+    --color-accent-primary-active: hsl(217, 100%, 80%);
+    --color-accent-secondary: hsl(262, 100%, 70%);
+    --color-accent-tertiary: hsl(340, 100%, 65%);
+
+    /* Semantic - Higher contrast */
+    --color-success-text: hsl(142, 100%, 85%);
+    --color-success-bg: hsl(142, 100%, 5%);
+    --color-success-border: hsl(142, 100%, 45%);
+    --color-success-primary: hsl(142, 100%, 65%);
+
+    --color-warning-text: hsl(38, 100%, 85%);
+    --color-warning-bg: hsl(38, 100%, 5%);
+    --color-warning-border: hsl(38, 100%, 45%);
+    --color-warning-primary: hsl(38, 100%, 70%);
+
+    --color-error-text: hsl(0, 100%, 85%);
+    --color-error-bg: hsl(0, 100%, 5%);
+    --color-error-border: hsl(0, 100%, 45%);
+    --color-error-primary: hsl(0, 100%, 75%);
+
+    --color-info-text: hsl(199, 100%, 85%);
+    --color-info-bg: hsl(199, 100%, 5%);
+    --color-info-border: hsl(199, 100%, 45%);
+    --color-info-primary: hsl(199, 100%, 70%);
+}
+
+.form-group {
+  --active: 0;
+  container-type: inline-size;
+  flex: 1;
+}
+
+form {
+  width: 40ch;
+  display: flex;
+}
+
+input {
+  --is-valid: 0;
+  --is-invalid: 0;
+  border: 0;
+  background:
+    linear-gradient(var(--input), var(--input)) padding-box,
+    linear-gradient(var(--invalid), var(--invalid)) calc((1 - var(--is-invalid)) * -100cqi) 0 / 100% 100% border-box,
+    linear-gradient(var(--valid), var(--valid)) calc((1 - var(--is-valid)) * 100cqi) 0 / 100% 100% border-box,
+    var(--input);
+  border: 2px solid transparent;
+  font-size: 2rem;
+  padding: 1rem 2rem;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+/*   background-position:
+    0 0,
+    calc((1 - var(--is-invalid)) * -100cqi) 0,
+    calc((1 - var(--is-valid)) * 100cqi) 0,
+    0 0; */
+  max-width: 100%;
+  width: 100cqi;
+  color: hsl(0 0% 80%);
+  font-family: "Geist Sans", "SF Pro", sans-serif;
+  font-weight: 40;
+  border-radius: 12px;
+  outline: none;
+  box-shadow: 0 1px hsl(0 0% 100% / 0.35) inset,
+    0 -1px hsl(0 0% 0% / 1) inset,
+    0 10px 20px -5px hsl(0 0% 0% / 1);
+}
+
+label {
+  margin-bottom: 0.5rem;
+  display: inline-block;
+  padding-left: 2rem;
+  opacity: calc(var(--active) + 0.45);
+  transition: opacity 0.5s;
+}
+
+.form-group:focus-within {
+  --active: 1;
+}
+
+input:invalid:not(:placeholder-shown):not(:focus-visible) {
+  --is-invalid: 1;
+}
+
+input:valid {
+  --is-valid: 1;
+}
+
+input::placeholder {
+  color: transparent;
+}
+
+@media(prefers-reduced-motion: no-preference) {
+  input {
+    transition: background-position 0.5s;
+  }
+}

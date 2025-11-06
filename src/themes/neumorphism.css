@@ -1,0 +1,313 @@
+/**
+ * Neumorphism Theme
+ *
+ * A soft, tactile theme featuring subtle depth through inner and outer shadows.
+ * Elements appear to extrude from or press into the background.
+ *
+ * Supports 3 modes (light, dim, dark) × 2 contrast levels (normal, high) = 6 variations
+ *
+ * Note: Neumorphism works best with low contrast between elements and background.
+ * High contrast mode makes it more accessible while maintaining the aesthetic.
+ */
+
+/* ============================================
+   LIGHT MODE (Normal Contrast)
+   ============================================ */
+
+:root[data-theme="neumorphism"][data-mode="light"]:not([data-contrast]),
+:root[data-theme="neumorphism"][data-mode="light"][data-contrast="normal"],
+:root[data-theme="neumorphism"]:not([data-mode]):not([data-contrast]),
+:root[data-theme="neumorphism"]:not([data-mode])[data-contrast="normal"] {
+	/* Backgrounds - Unified soft gray for neumorphic effect */
+	--color-bg-primary: hsl(210, 10%, 92%);
+	--color-bg-secondary: hsl(210, 10%, 92%);
+	--color-bg-tertiary: hsl(210, 10%, 90%);
+	--color-bg-elevated: hsl(210, 10%, 94%);
+	--color-bg-inverse: hsl(210, 10%, 12%);
+
+	/* Foreground/Text - Lower contrast for soft look */
+	--color-fg-primary: hsl(210, 15%, 25%);
+	--color-fg-secondary: hsl(210, 10%, 45%);
+	--color-fg-tertiary: hsl(210, 8%, 60%);
+	--color-fg-disabled: hsl(210, 5%, 75%);
+	--color-fg-inverse: hsl(210, 10%, 92%);
+	--color-fg-on-accent: hsl(0, 0%, 100%);
+
+	/* Borders - Very subtle */
+	--color-border-primary: hsl(210, 10%, 85%);
+	--color-border-secondary: hsl(210, 8%, 88%);
+	--color-border-focus: hsl(217, 70%, 55%);
+	--color-border-hover: hsl(210, 12%, 80%);
+
+	/* Accents - Softer, muted */
+	--color-accent-primary: hsl(217, 70%, 55%);
+	--color-accent-primary-hover: hsl(217, 70%, 50%);
+	--color-accent-primary-active: hsl(217, 70%, 45%);
+	--color-accent-secondary: hsl(262, 60%, 55%);
+	--color-accent-tertiary: hsl(170, 60%, 45%);
+
+	/* Semantic colors - Muted */
+	--color-success-text: hsl(142, 50%, 35%);
+	--color-success-bg: hsl(142, 30%, 88%);
+	--color-success-border: hsl(142, 30%, 80%);
+	--color-success-primary: hsl(142, 50%, 45%);
+
+	--color-warning-text: hsl(38, 70%, 40%);
+	--color-warning-bg: hsl(38, 50%, 88%);
+	--color-warning-border: hsl(38, 50%, 80%);
+	--color-warning-primary: hsl(38, 70%, 55%);
+
+	--color-error-text: hsl(0, 60%, 45%);
+	--color-error-bg: hsl(0, 40%, 92%);
+	--color-error-border: hsl(0, 40%, 85%);
+	--color-error-primary: hsl(0, 60%, 60%);
+
+	--color-info-text: hsl(199, 70%, 40%);
+	--color-info-bg: hsl(199, 40%, 90%);
+	--color-info-border: hsl(199, 40%, 82%);
+	--color-info-primary: hsl(199, 70%, 52%);
+
+	/* Neumorphic shadows - Both light and dark for depth */
+	--shadow-sm: -2px -2px 4px hsl(0, 0%, 100%), 2px 2px 4px hsl(210, 10%, 75%);
+	--shadow-md: -4px -4px 8px hsl(0, 0%, 100%), 4px 4px 8px hsl(210, 10%, 70%);
+	--shadow-lg: -6px -6px 12px hsl(0, 0%, 100%), 6px 6px 12px hsl(210, 10%, 65%);
+	--shadow-xl: -8px -8px 16px hsl(0, 0%, 100%), 8px 8px 16px hsl(210, 10%, 60%);
+
+	--surface-overlay: rgb(234 236 240 / 0.7);
+	--surface-glass: rgb(234 236 240 / 0.9);
+}
+
+/* ============================================
+   LIGHT MODE (High Contrast)
+   ============================================ */
+
+:root[data-theme="neumorphism"][data-mode="light"][data-contrast="high"] {
+	--color-bg-primary: hsl(210, 15%, 95%);
+	--color-bg-secondary: hsl(210, 15%, 95%);
+	--color-bg-tertiary: hsl(210, 15%, 92%);
+	--color-bg-elevated: hsl(210, 15%, 97%);
+	--color-bg-inverse: hsl(210, 20%, 8%);
+
+	--color-fg-primary: hsl(210, 25%, 15%);
+	--color-fg-secondary: hsl(210, 20%, 35%);
+	--color-fg-tertiary: hsl(210, 15%, 50%);
+	--color-fg-disabled: hsl(210, 10%, 65%);
+	--color-fg-inverse: hsl(210, 15%, 95%);
+	--color-fg-on-accent: hsl(0, 0%, 100%);
+
+	--color-border-primary: hsl(210, 20%, 50%);
+	--color-border-secondary: hsl(210, 15%, 65%);
+	--color-border-focus: hsl(217, 80%, 45%);
+	--color-border-hover: hsl(210, 25%, 40%);
+
+	/* Stronger neumorphic shadows for accessibility */
+	--shadow-sm: -3px -3px 6px hsl(0, 0%, 100%), 3px 3px 6px hsl(210, 15%, 70%);
+	--shadow-md: -5px -5px 10px hsl(0, 0%, 100%), 5px 5px 10px hsl(210, 15%, 65%);
+	--shadow-lg: -7px -7px 14px hsl(0, 0%, 100%), 7px 7px 14px hsl(210, 15%, 60%);
+	--shadow-xl: -10px -10px 20px hsl(0, 0%, 100%),
+		10px 10px 20px hsl(210, 15%, 55%);
+}
+
+/* ============================================
+   DIM MODE (Normal Contrast)
+   ============================================ */
+
+:root[data-theme="neumorphism"][data-mode="dim"]:not([data-contrast]),
+:root[data-theme="neumorphism"][data-mode="dim"][data-contrast="normal"] {
+	/* Backgrounds - Mid-tone gray */
+	--color-bg-primary: hsl(210, 12%, 22%);
+	--color-bg-secondary: hsl(210, 12%, 22%);
+	--color-bg-tertiary: hsl(210, 12%, 20%);
+	--color-bg-elevated: hsl(210, 12%, 24%);
+	--color-bg-inverse: hsl(210, 10%, 92%);
+
+	/* Foreground/Text */
+	--color-fg-primary: hsl(210, 15%, 85%);
+	--color-fg-secondary: hsl(210, 10%, 65%);
+	--color-fg-tertiary: hsl(210, 8%, 52%);
+	--color-fg-disabled: hsl(210, 5%, 40%);
+	--color-fg-inverse: hsl(210, 12%, 22%);
+	--color-fg-on-accent: hsl(0, 0%, 100%);
+
+	/* Borders */
+	--color-border-primary: hsl(210, 12%, 32%);
+	--color-border-secondary: hsl(210, 10%, 28%);
+	--color-border-focus: hsl(217, 70%, 60%);
+	--color-border-hover: hsl(210, 14%, 36%);
+
+	/* Accents */
+	--color-accent-primary: hsl(217, 70%, 60%);
+	--color-accent-primary-hover: hsl(217, 70%, 65%);
+	--color-accent-primary-active: hsl(217, 70%, 70%);
+	--color-accent-secondary: hsl(262, 60%, 60%);
+	--color-accent-tertiary: hsl(170, 60%, 50%);
+
+	/* Semantic */
+	--color-success-text: hsl(142, 50%, 65%);
+	--color-success-bg: hsl(142, 30%, 18%);
+	--color-success-border: hsl(142, 30%, 28%);
+	--color-success-primary: hsl(142, 50%, 55%);
+
+	--color-warning-text: hsl(38, 70%, 65%);
+	--color-warning-bg: hsl(38, 50%, 18%);
+	--color-warning-border: hsl(38, 50%, 28%);
+	--color-warning-primary: hsl(38, 70%, 60%);
+
+	--color-error-text: hsl(0, 60%, 68%);
+	--color-error-bg: hsl(0, 40%, 16%);
+	--color-error-border: hsl(0, 40%, 26%);
+	--color-error-primary: hsl(0, 60%, 65%);
+
+	--color-info-text: hsl(199, 70%, 65%);
+	--color-info-bg: hsl(199, 40%, 16%);
+	--color-info-border: hsl(199, 40%, 26%);
+	--color-info-primary: hsl(199, 70%, 58%);
+
+	/* Dark neumorphic shadows */
+	--shadow-sm: -2px -2px 4px hsl(210, 12%, 28%), 2px 2px 4px hsl(0, 0%, 0% / 0.4);
+	--shadow-md: -4px -4px 8px hsl(210, 12%, 30%), 4px 4px 8px hsl(0, 0%, 0% / 0.5);
+	--shadow-lg: -6px -6px 12px hsl(210, 12%, 32%),
+		6px 6px 12px hsl(0, 0%, 0% / 0.6);
+	--shadow-xl: -8px -8px 16px hsl(210, 12%, 34%),
+		8px 8px 16px hsl(0, 0%, 0% / 0.7);
+
+	--surface-overlay: rgb(48 54 63 / 0.8);
+	--surface-glass: rgb(48 54 63 / 0.9);
+}
+
+/* ============================================
+   DIM MODE (High Contrast)
+   ============================================ */
+
+:root[data-theme="neumorphism"][data-mode="dim"][data-contrast="high"] {
+	--color-bg-primary: hsl(210, 15%, 18%);
+	--color-bg-secondary: hsl(210, 15%, 18%);
+	--color-bg-tertiary: hsl(210, 15%, 16%);
+	--color-bg-elevated: hsl(210, 15%, 20%);
+	--color-bg-inverse: hsl(210, 15%, 95%);
+
+	--color-fg-primary: hsl(210, 15%, 95%);
+	--color-fg-secondary: hsl(210, 12%, 78%);
+	--color-fg-tertiary: hsl(210, 10%, 62%);
+	--color-fg-disabled: hsl(210, 8%, 48%);
+	--color-fg-inverse: hsl(210, 15%, 18%);
+	--color-fg-on-accent: hsl(0, 0%, 100%);
+
+	--color-border-primary: hsl(210, 15%, 48%);
+	--color-border-secondary: hsl(210, 12%, 38%);
+	--color-border-focus: hsl(217, 80%, 65%);
+	--color-border-hover: hsl(210, 18%, 56%);
+
+	/* Stronger shadows */
+	--shadow-sm: -3px -3px 6px hsl(210, 15%, 24%), 3px 3px 6px hsl(0, 0%, 0% / 0.5);
+	--shadow-md: -5px -5px 10px hsl(210, 15%, 26%),
+		5px 5px 10px hsl(0, 0%, 0% / 0.6);
+	--shadow-lg: -7px -7px 14px hsl(210, 15%, 28%),
+		7px 7px 14px hsl(0, 0%, 0% / 0.7);
+	--shadow-xl: -10px -10px 20px hsl(210, 15%, 30%),
+		10px 10px 20px hsl(0, 0%, 0% / 0.8);
+}
+
+/* ============================================
+   DARK MODE (Normal Contrast)
+   ============================================ */
+
+:root[data-theme="neumorphism"][data-mode="dark"]:not([data-contrast]),
+:root[data-theme="neumorphism"][data-mode="dark"][data-contrast="normal"] {
+	/* Backgrounds - Deep dark gray */
+	--color-bg-primary: hsl(210, 15%, 12%);
+	--color-bg-secondary: hsl(210, 15%, 12%);
+	--color-bg-tertiary: hsl(210, 15%, 10%);
+	--color-bg-elevated: hsl(210, 15%, 14%);
+	--color-bg-inverse: hsl(210, 10%, 92%);
+
+	/* Foreground/Text */
+	--color-fg-primary: hsl(210, 15%, 88%);
+	--color-fg-secondary: hsl(210, 10%, 68%);
+	--color-fg-tertiary: hsl(210, 8%, 54%);
+	--color-fg-disabled: hsl(210, 5%, 38%);
+	--color-fg-inverse: hsl(210, 15%, 12%);
+	--color-fg-on-accent: hsl(0, 0%, 100%);
+
+	/* Borders */
+	--color-border-primary: hsl(210, 15%, 24%);
+	--color-border-secondary: hsl(210, 12%, 18%);
+	--color-border-focus: hsl(217, 70%, 60%);
+	--color-border-hover: hsl(210, 18%, 30%);
+
+	/* Accents */
+	--color-accent-primary: hsl(217, 70%, 60%);
+	--color-accent-primary-hover: hsl(217, 70%, 65%);
+	--color-accent-primary-active: hsl(217, 70%, 70%);
+	--color-accent-secondary: hsl(262, 60%, 60%);
+	--color-accent-tertiary: hsl(170, 60%, 50%);
+
+	/* Semantic */
+	--color-success-text: hsl(142, 50%, 68%);
+	--color-success-bg: hsl(142, 30%, 10%);
+	--color-success-border: hsl(142, 30%, 22%);
+	--color-success-primary: hsl(142, 50%, 55%);
+
+	--color-warning-text: hsl(38, 70%, 68%);
+	--color-warning-bg: hsl(38, 50%, 10%);
+	--color-warning-border: hsl(38, 50%, 22%);
+	--color-warning-primary: hsl(38, 70%, 60%);
+
+	--color-error-text: hsl(0, 60%, 70%);
+	--color-error-bg: hsl(0, 40%, 10%);
+	--color-error-border: hsl(0, 40%, 22%);
+	--color-error-primary: hsl(0, 60%, 65%);
+
+	--color-info-text: hsl(199, 70%, 68%);
+	--color-info-bg: hsl(199, 40%, 10%);
+	--color-info-border: hsl(199, 40%, 22%);
+	--color-info-primary: hsl(199, 70%, 58%);
+
+	/* Deep neumorphic shadows */
+	--shadow-sm: -2px -2px 4px hsl(210, 15%, 18%), 2px 2px 4px hsl(0, 0%, 0% / 0.6);
+	--shadow-md: -4px -4px 8px hsl(210, 15%, 20%), 4px 4px 8px hsl(0, 0%, 0% / 0.7);
+	--shadow-lg: -6px -6px 12px hsl(210, 15%, 22%),
+		6px 6px 12px hsl(0, 0%, 0% / 0.8);
+	--shadow-xl: -8px -8px 16px hsl(210, 15%, 24%),
+		8px 8px 16px hsl(0, 0%, 0% / 0.9);
+
+	--surface-overlay: rgb(26 30 36 / 0.85);
+	--surface-glass: rgb(26 30 36 / 0.95);
+}
+
+/* ============================================
+   DARK MODE (High Contrast)
+   ============================================ */
+
+:root[data-theme="neumorphism"][data-mode="dark"][data-contrast="high"] {
+	--color-bg-primary: hsl(210, 20%, 8%);
+	--color-bg-secondary: hsl(210, 20%, 8%);
+	--color-bg-tertiary: hsl(210, 20%, 6%);
+	--color-bg-elevated: hsl(210, 20%, 10%);
+	--color-bg-inverse: hsl(0, 0%, 100%);
+
+	--color-fg-primary: hsl(0, 0%, 100%);
+	--color-fg-secondary: hsl(210, 12%, 82%);
+	--color-fg-tertiary: hsl(210, 10%, 66%);
+	--color-fg-disabled: hsl(210, 8%, 50%);
+	--color-fg-inverse: hsl(210, 20%, 8%);
+	--color-fg-on-accent: hsl(0, 0%, 100%);
+
+	--color-border-primary: hsl(210, 20%, 60%);
+	--color-border-secondary: hsl(210, 15%, 45%);
+	--color-border-focus: hsl(217, 80%, 65%);
+	--color-border-hover: hsl(210, 25%, 70%);
+
+	--color-accent-primary: hsl(217, 80%, 65%);
+	--color-accent-primary-hover: hsl(217, 80%, 70%);
+	--color-accent-primary-active: hsl(217, 80%, 75%);
+	--color-accent-secondary: hsl(262, 70%, 65%);
+	--color-accent-tertiary: hsl(170, 70%, 55%);
+
+	/* Maximum contrast shadows */
+	--shadow-sm: -3px -3px 6px hsl(210, 20%, 14%), 3px 3px 6px hsl(0, 0%, 0%);
+	--shadow-md: -5px -5px 10px hsl(210, 20%, 16%), 5px 5px 10px hsl(0, 0%, 0%);
+	--shadow-lg: -7px -7px 14px hsl(210, 20%, 18%), 7px 7px 14px hsl(0, 0%, 0%);
+	--shadow-xl: -10px -10px 20px hsl(210, 20%, 20%), 10px 10px 20px hsl(0, 0%, 0%);
+}
+
