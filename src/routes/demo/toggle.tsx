@@ -1,12 +1,17 @@
 import { useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 import { Toggle } from "@/components/youi/tabs";
+
+export const Route = createFileRoute("/demo/toggle")({
+	component: ToggleExamples,
+});
 
 /**
  * Toggle Component Examples
  *
  * Demonstrates the various ways to use the Toggle component.
  */
-export function ToggleExamples() {
+function ToggleExamples() {
 	const [simpleValue, setSimpleValue] = useState("option1");
 	const [tierValue, setTierValue] = useState("free");
 

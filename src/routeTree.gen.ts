@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DemoWorkspaceRouteImport } from './routes/demo/workspace'
+import { Route as DemoToggleRouteImport } from './routes/demo/toggle'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoTableRouteImport } from './routes/demo/table'
 import { Route as DemoStoreRouteImport } from './routes/demo/store'
@@ -40,6 +41,11 @@ const IndexRoute = IndexRouteImport.update({
 const DemoWorkspaceRoute = DemoWorkspaceRouteImport.update({
   id: '/demo/workspace',
   path: '/demo/workspace',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoToggleRoute = DemoToggleRouteImport.update({
+  id: '/demo/toggle',
+  path: '/demo/toggle',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
@@ -154,6 +160,7 @@ export interface FileRoutesByFullPath {
   '/demo/store': typeof DemoStoreRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/demo/toggle': typeof DemoToggleRoute
   '/demo/workspace': typeof DemoWorkspaceRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
@@ -178,6 +185,7 @@ export interface FileRoutesByTo {
   '/demo/store': typeof DemoStoreRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/demo/toggle': typeof DemoToggleRoute
   '/demo/workspace': typeof DemoWorkspaceRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
@@ -203,6 +211,7 @@ export interface FileRoutesById {
   '/demo/store': typeof DemoStoreRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/demo/toggle': typeof DemoToggleRoute
   '/demo/workspace': typeof DemoWorkspaceRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
@@ -229,6 +238,7 @@ export interface FileRouteTypes {
     | '/demo/store'
     | '/demo/table'
     | '/demo/tanstack-query'
+    | '/demo/toggle'
     | '/demo/workspace'
     | '/demo/api/names'
     | '/demo/api/tq-todos'
@@ -253,6 +263,7 @@ export interface FileRouteTypes {
     | '/demo/store'
     | '/demo/table'
     | '/demo/tanstack-query'
+    | '/demo/toggle'
     | '/demo/workspace'
     | '/demo/api/names'
     | '/demo/api/tq-todos'
@@ -277,6 +288,7 @@ export interface FileRouteTypes {
     | '/demo/store'
     | '/demo/table'
     | '/demo/tanstack-query'
+    | '/demo/toggle'
     | '/demo/workspace'
     | '/demo/api/names'
     | '/demo/api/tq-todos'
@@ -302,6 +314,7 @@ export interface RootRouteChildren {
   DemoStoreRoute: typeof DemoStoreRoute
   DemoTableRoute: typeof DemoTableRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
+  DemoToggleRoute: typeof DemoToggleRoute
   DemoWorkspaceRoute: typeof DemoWorkspaceRoute
   DemoApiNamesRoute: typeof DemoApiNamesRoute
   DemoApiTqTodosRoute: typeof DemoApiTqTodosRoute
@@ -330,6 +343,13 @@ declare module '@tanstack/react-router' {
       path: '/demo/workspace'
       fullPath: '/demo/workspace'
       preLoaderRoute: typeof DemoWorkspaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo/toggle': {
+      id: '/demo/toggle'
+      path: '/demo/toggle'
+      fullPath: '/demo/toggle'
+      preLoaderRoute: typeof DemoToggleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/tanstack-query': {
@@ -486,6 +506,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoStoreRoute: DemoStoreRoute,
   DemoTableRoute: DemoTableRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
+  DemoToggleRoute: DemoToggleRoute,
   DemoWorkspaceRoute: DemoWorkspaceRoute,
   DemoApiNamesRoute: DemoApiNamesRoute,
   DemoApiTqTodosRoute: DemoApiTqTodosRoute,
