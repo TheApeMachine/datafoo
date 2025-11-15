@@ -44,14 +44,16 @@ export interface LayerMetadata {
 	state: LayerState;
 	/** Custom application-specific data */
 	customData?: Record<string, unknown>;
-	/** Index in the layer stack (0 = front) - for Z-axis */
+	/** Index in the layer stack (0 = front) - legacy for backward compatibility */
 	index: number;
-	/** Current z-position in 3D space */
+	/** Current z-position in 3D space (legacy) */
 	zPosition: number;
 	/** X-coordinate in 3D space (0 = center) */
 	x: number;
 	/** Y-coordinate in 3D space (0 = center) */
 	y: number;
+	/** Z-coordinate in 3D space (0 = front) */
+	z: number;
 	/** Adjacent layer IDs */
 	adjacent: {
 		up?: string;
@@ -108,6 +110,8 @@ export interface LayerConfig {
 	x?: number;
 	/** Y coordinate (defaults to 0) */
 	y?: number;
+	/** Z coordinate (defaults to 0) */
+	z?: number;
 	/** Adjacent layer connections */
 	adjacent?: {
 		up?: string;

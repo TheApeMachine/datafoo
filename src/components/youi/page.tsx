@@ -510,18 +510,26 @@ Page.LayerProvider = ({
 			const index = layerOrderRef.current.length;
 			layerOrderRef.current.push(id);
 
+			const x = config.x ?? 0;
+			const y = config.y ?? 0;
+			const z = config.z ?? 0;
+
+			// Check if this is the first layer at (0,0,0)
+			const isOrigin = x === 0 && y === 0 && z === 0;
+
 			const metadata: LayerMetadata = {
 				id,
 				type: config.type ?? "custom",
 				title: config.title,
 				description: config.description,
 				priority: config.priority,
-				state: index === 0 ? "active" : "inactive",
+				state: isOrigin ? "active" : "inactive",
 				customData: config.customData,
 				index,
 				zPosition: -index * offset.current,
-				x: config.x ?? 0,
-				y: config.y ?? 0,
+				x,
+				y,
+				z,
 				adjacent: config.adjacent ?? {},
 			};
 
@@ -637,10 +645,24 @@ Page.LayerProvider = ({
 	// Navigate to a specific grid position
 	const navigateToGridPosition = useCallback(
 		(position: Grid3DPosition) => {
+			// Check if a layer exists at this position
+			const layerAtPosition = Array.from(layersRef.current.values()).find(
+				(layer) =>
+					layer.x === position.x &&
+					layer.y === position.y &&
+					layer.z === position.z,
+			);
+
+			// Only navigate if a layer exists at the target position
+			if (!layerAtPosition) {
+				console.log(`No layer at position (${position.x}, ${position.y}, ${position.z})`);
+				return;
+			}
+
 			// Update all three axes
 			const newX = position.x * gridConfig.spacing.x;
 			const newY = position.y * gridConfig.spacing.y;
-			const newZ = -position.z * gridConfig.spacing.z;
+			const newZ = position.z * gridConfig.spacing.z;
 
 			setCurrentX(newX);
 			setCurrentY(newY);
@@ -650,22 +672,14 @@ Page.LayerProvider = ({
 			layersRef.current.forEach((layer) => {
 				const layerScreenX = layer.x * gridConfig.spacing.x - newX;
 				const layerScreenY = layer.y * gridConfig.spacing.y - newY;
-				const layerScreenZ = -layer.index * gridConfig.spacing.z + newZ;
+				const layerScreenZ = layer.z * gridConfig.spacing.z - newZ;
 
 				const isAtOrigin = layerScreenX === 0 && layerScreenY === 0 && layerScreenZ === 0;
 				const state: LayerState = isAtOrigin ? "active" : "inactive";
 				layersRef.current.set(layer.id, { ...layer, state });
 			});
 
-			// Find layer at this position and announce it
-			const layerAtPosition = Array.from(layersRef.current.values()).find(
-				(layer) =>
-					layer.x === position.x &&
-					layer.y === position.y &&
-					layer.index === position.z,
-			);
-
-			if (layerAtPosition && liveRegionRef.current) {
+			if (liveRegionRef.current) {
 				liveRegionRef.current.textContent = `Navigated to ${layerAtPosition.title} at position (${position.x}, ${position.y}, ${position.z})`;
 				addToHistory(layerAtPosition.id, layerAtPosition.index);
 			}
@@ -676,23 +690,22 @@ Page.LayerProvider = ({
 	// Navigate in a direction
 	const navigate = useCallback(
 		(direction: NavigationDirection) => {
-			const totalLayers = layerOrderRef.current.length;
-			const currentIndex = -currentOffset / gridConfig.spacing.z;
 			const currentXPos = currentX / gridConfig.spacing.x;
 			const currentYPos = currentY / gridConfig.spacing.y;
+			const currentZPos = currentOffset / gridConfig.spacing.z;
 
 			let targetX = currentXPos;
 			let targetY = currentYPos;
-			let targetZ = currentIndex;
+			let targetZ = currentZPos;
 
 			switch (direction) {
 				case "backward":
 					// Move backward in Z (toward front)
-					targetZ = currentIndex - 1;
+					targetZ = currentZPos - 1;
 					break;
 				case "forward":
 					// Move forward in Z (toward back)
-					targetZ = currentIndex + 1;
+					targetZ = currentZPos + 1;
 					break;
 				case "left":
 					// Move left in X
@@ -711,14 +724,13 @@ Page.LayerProvider = ({
 					targetY = currentYPos - 1;
 					break;
 				case "first":
-					// Jump to first layer
+					// Jump to origin
 					targetZ = 0;
 					targetX = 0;
 					targetY = 0;
 					break;
 				case "last":
-					// Jump to last layer
-					targetZ = totalLayers - 1;
+					// Not used in new system
 					break;
 			}
 
@@ -737,7 +749,7 @@ Page.LayerProvider = ({
 				}
 			}
 
-			// Navigate to the new position
+			// Navigate to the new position (will only move if layer exists)
 			navigateToGridPosition({ x: targetX, y: targetY, z: targetZ });
 		},
 		[currentOffset, currentX, currentY, gridConfig, navigateToGridPosition],
@@ -803,29 +815,15 @@ Page.LayerProvider = ({
 				setShowKeyboardHints(false);
 			}
 
-			// Arrow navigation with modifiers for different axes
+			// Arrow navigation for X and Y axes
 			if (e.key === "ArrowUp") {
 				e.preventDefault();
-				if (e.ctrlKey || e.metaKey) {
-					navigate("first");
-				} else if (e.shiftKey) {
-					// Shift + Up = Y axis (move up)
-					navigate("up");
-				} else {
-					// Normal Up = Z axis (move backward/toward front)
-					navigate("backward");
-				}
+				// Up = Y axis (move up)
+				navigate("up");
 			} else if (e.key === "ArrowDown") {
 				e.preventDefault();
-				if (e.ctrlKey || e.metaKey) {
-					navigate("last");
-				} else if (e.shiftKey) {
-					// Shift + Down = Y axis (move down)
-					navigate("down");
-				} else {
-					// Normal Down = Z axis (move forward/toward back)
-					navigate("forward");
-				}
+				// Down = Y axis (move down)
+				navigate("down");
 			} else if (e.key === "ArrowLeft") {
 				e.preventDefault();
 				// Left = X axis (move left)
@@ -836,25 +834,25 @@ Page.LayerProvider = ({
 				navigate("right");
 			}
 
-			// Escape to return to first layer
+			// Escape to return to origin
 			else if (e.key === "Escape") {
 				e.preventDefault();
 				navigate("first");
 			}
 
-			// Number keys for direct navigation
-			else if (e.key >= "1" && e.key <= "9") {
-				const index = -Number.parseInt(e.key)+1;
-				if (index < layerOrderRef.current.length) {
-					e.preventDefault();
-					navigateToIndex(index);
-				}
+			// Number keys 0-9 for Z-axis navigation
+			else if (e.key >= "0" && e.key <= "9") {
+				e.preventDefault();
+				const targetZ = Number.parseInt(e.key);
+				const currentXPos = currentX / gridConfig.spacing.x;
+				const currentYPos = currentY / gridConfig.spacing.y;
+				navigateToGridPosition({ x: currentXPos, y: currentYPos, z: targetZ });
 			}
 		};
 
 		window.addEventListener("keyup", handleKeyDown);
 		return () => window.removeEventListener("keyup", handleKeyDown);
-	}, [navigate, navigateToIndex, showKeyboardHints]);
+	}, [navigate, navigateToGridPosition, showKeyboardHints, currentX, currentY, gridConfig]);
 
 	const contextValue: LayerContextType = {
 		registerLayer,
@@ -921,29 +919,6 @@ Page.LayerProvider = ({
 							<div className="grid grid-cols-2 gap-4">
 								<div>
 									<h3 className="text-sm font-semibold mb-2 text-gray-900 dark:text-white">
-										Z-Axis (Depth)
-									</h3>
-									<div className="space-y-2 text-sm">
-										<div className="flex justify-between gap-2">
-											<kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">
-												↑/↓
-											</kbd>
-											<span className="text-gray-700 dark:text-gray-300">
-												Forward/Back
-											</span>
-										</div>
-										<div className="flex justify-between gap-2">
-											<kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">
-												Ctrl + ↑/↓
-											</kbd>
-											<span className="text-gray-700 dark:text-gray-300">
-												First/Last
-											</span>
-										</div>
-									</div>
-								</div>
-								<div>
-									<h3 className="text-sm font-semibold mb-2 text-gray-900 dark:text-white">
 										X-Axis (Horizontal)
 									</h3>
 									<div className="space-y-2 text-sm">
@@ -964,10 +939,25 @@ Page.LayerProvider = ({
 									<div className="space-y-2 text-sm">
 										<div className="flex justify-between gap-2">
 											<kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">
-												Shift + ↑/↓
+												↑/↓
 											</kbd>
 											<span className="text-gray-700 dark:text-gray-300">
 												Up/Down
+											</span>
+										</div>
+									</div>
+								</div>
+								<div>
+									<h3 className="text-sm font-semibold mb-2 text-gray-900 dark:text-white">
+										Z-Axis (Depth)
+									</h3>
+									<div className="space-y-2 text-sm">
+										<div className="flex justify-between gap-2">
+											<kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">
+												0-9
+											</kbd>
+											<span className="text-gray-700 dark:text-gray-300">
+												Jump to Z layer
 											</span>
 										</div>
 									</div>
@@ -983,14 +973,6 @@ Page.LayerProvider = ({
 											</kbd>
 											<span className="text-gray-700 dark:text-gray-300">
 												Origin (0,0,0)
-											</span>
-										</div>
-										<div className="flex justify-between gap-2">
-											<kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">
-												1-9
-											</kbd>
-											<span className="text-gray-700 dark:text-gray-300">
-												Jump to layer
 											</span>
 										</div>
 										<div className="flex justify-between gap-2">
@@ -1094,10 +1076,7 @@ Page.Layer = ({
 	const layerMetadata = context?.getLayer(layerIdRef.current);
 	const xPosition = layerMetadata && context ? layerMetadata.x * context.gridConfig.spacing.x - context.currentX : 0;
 	const yPosition = layerMetadata && context ? layerMetadata.y * context.gridConfig.spacing.y - context.currentY : 0;
-	const zPosition =
-		layerIndex !== null && context
-			? -layerIndex * context.gridConfig.spacing.z + context.currentOffset
-			: 0;
+	const zPosition = layerMetadata && context ? layerMetadata.z * context.gridConfig.spacing.z - context.currentOffset : 0;
 
 	// Update active state - layer is active when at origin (0, 0, 0) in screen space
 	useEffect(() => {
@@ -1217,7 +1196,7 @@ Page.Layer = ({
 			{/* Debug label */}
 			{showDebug && (
 				<div className="absolute top-4 left-4 text-white bg-black/50 px-2 py-1 rounded text-xs z-50 font-mono">
-					Layer {layerIndex} | Pos({layerMetadata?.x},{layerMetadata?.y},{layerIndex}) | Screen({xPosition.toFixed(0)},{yPosition.toFixed(0)},{zPosition.toFixed(0)}) | {type} |{" "}
+					Layer {layerIndex} | Pos({layerMetadata?.x},{layerMetadata?.y},{layerMetadata?.z}) | Screen({xPosition.toFixed(0)},{yPosition.toFixed(0)},{zPosition.toFixed(0)}) | {type} |{" "}
 					{isActive ? "ACTIVE" : "inactive"}
 				</div>
 			)}

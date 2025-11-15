@@ -31,6 +31,7 @@ function GridWorkspaceDemo() {
 				description="The central hub of the workspace"
 				x={0}
 				y={0}
+				z={0}
 				showDebug
 				className="bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center"
 			>
@@ -49,6 +50,7 @@ function GridWorkspaceDemo() {
 				description="Layer to the left"
 				x={-1}
 				y={0}
+				z={0}
 				showDebug
 				className="bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center"
 			>
@@ -66,6 +68,7 @@ function GridWorkspaceDemo() {
 				description="Layer to the right"
 				x={1}
 				y={0}
+				z={0}
 				showDebug
 				className="bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center"
 			>
@@ -84,6 +87,7 @@ function GridWorkspaceDemo() {
 				description="Layer above"
 				x={0}
 				y={1}
+				z={0}
 				showDebug
 				className="bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center"
 			>
@@ -91,7 +95,7 @@ function GridWorkspaceDemo() {
 					title="Upper Level"
 					position={{ x: 0, y: 1, z: 0 }}
 					color="yellow"
-					description="Press Shift+↓ to go back to center"
+					description="Press ↓ to go back to center"
 				/>
 			</Page.Layer>
 
@@ -101,6 +105,7 @@ function GridWorkspaceDemo() {
 				description="Layer below"
 				x={0}
 				y={-1}
+				z={0}
 				showDebug
 				className="bg-gradient-to-br from-red-500 to-rose-500 flex items-center justify-center"
 			>
@@ -108,7 +113,7 @@ function GridWorkspaceDemo() {
 					title="Lower Level"
 					position={{ x: 0, y: -1, z: 0 }}
 					color="red"
-					description="Press Shift+↑ to go back to center"
+					description="Press ↑ to go back to center"
 				/>
 			</Page.Layer>
 
@@ -116,9 +121,10 @@ function GridWorkspaceDemo() {
 			<Page.Layer
 				title="Background Layer"
 				type="exploration"
-				description="Layer in the back"
+				description="Layer in the back (Z=1)"
 				x={0}
 				y={0}
+				z={1}
 				showDebug
 				className="bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center"
 			>
@@ -126,7 +132,7 @@ function GridWorkspaceDemo() {
 					title="Background Layer"
 					position={{ x: 0, y: 0, z: 1 }}
 					color="indigo"
-					description="Press ↑ to go back to center"
+					description="Press 0 to return to front layer"
 				/>
 			</Page.Layer>
 
@@ -137,6 +143,7 @@ function GridWorkspaceDemo() {
 				description="Northeast corner"
 				x={1}
 				y={1}
+				z={0}
 				showDebug
 				className="bg-gradient-to-br from-teal-500 to-cyan-600 flex items-center justify-center"
 			>
@@ -154,6 +161,7 @@ function GridWorkspaceDemo() {
 				description="Southwest corner"
 				x={-1}
 				y={-1}
+				z={0}
 				showDebug
 				className="bg-gradient-to-br from-amber-500 to-yellow-600 flex items-center justify-center"
 			>
@@ -172,6 +180,7 @@ function GridWorkspaceDemo() {
 				description="Far diagonal corner"
 				x={1}
 				y={1}
+				z={1}
 				showDebug
 				className="bg-gradient-to-br from-fuchsia-500 to-pink-600 flex items-center justify-center"
 			>
@@ -179,7 +188,7 @@ function GridWorkspaceDemo() {
 					title="Deep Diagonal"
 					position={{ x: 1, y: 1, z: 1 }}
 					color="fuchsia"
-					description="Furthest corner in 3D space"
+					description="Furthest corner in 3D space (press 0 or Esc to return)"
 				/>
 			</Page.Layer>
 		</Page.LayerProvider>
@@ -218,15 +227,6 @@ function LayerContent({ title, position, color, description }: LayerContentProps
 
 				<div className="grid grid-cols-2 gap-4 text-sm">
 					<div>
-						<div className="font-semibold mb-2 text-white/80">Z-Axis (Depth)</div>
-						<div className="space-y-1 text-xs">
-							<div className="flex justify-between">
-								<kbd className="px-2 py-1 bg-white/20 rounded">↑/↓</kbd>
-								<span>Forward/Back</span>
-							</div>
-						</div>
-					</div>
-					<div>
 						<div className="font-semibold mb-2 text-white/80">X-Axis (Horizontal)</div>
 						<div className="space-y-1 text-xs">
 							<div className="flex justify-between">
@@ -239,8 +239,17 @@ function LayerContent({ title, position, color, description }: LayerContentProps
 						<div className="font-semibold mb-2 text-white/80">Y-Axis (Vertical)</div>
 						<div className="space-y-1 text-xs">
 							<div className="flex justify-between">
-								<kbd className="px-2 py-1 bg-white/20 rounded">Shift+↑/↓</kbd>
+								<kbd className="px-2 py-1 bg-white/20 rounded">↑/↓</kbd>
 								<span>Up/Down</span>
+							</div>
+						</div>
+					</div>
+					<div>
+						<div className="font-semibold mb-2 text-white/80">Z-Axis (Depth)</div>
+						<div className="space-y-1 text-xs">
+							<div className="flex justify-between">
+								<kbd className="px-2 py-1 bg-white/20 rounded">0-9</kbd>
+								<span>Jump to Z layer</span>
 							</div>
 						</div>
 					</div>
@@ -249,11 +258,11 @@ function LayerContent({ title, position, color, description }: LayerContentProps
 						<div className="space-y-1 text-xs">
 							<div className="flex justify-between">
 								<kbd className="px-2 py-1 bg-white/20 rounded">Esc</kbd>
-								<span>Origin</span>
+								<span>Origin (0,0,0)</span>
 							</div>
 							<div className="flex justify-between">
 								<kbd className="px-2 py-1 bg-white/20 rounded">?</kbd>
-								<span>Help</span>
+								<span>Show all keys</span>
 							</div>
 						</div>
 					</div>

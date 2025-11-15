@@ -445,7 +445,7 @@ export const Grid3DIndicator = ({
 							// Calculate position relative to current viewport
 							const relX = layer.x - gridPos.x;
 							const relY = layer.y - gridPos.y;
-							const relZ = layer.index - gridPos.z;
+							const relZ = layer.z - gridPos.z;
 
 							// Only show layers within range
 							if (Math.abs(relX) > range || Math.abs(relY) > range) {
