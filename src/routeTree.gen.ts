@@ -14,6 +14,7 @@ import { Route as DemoWorkspaceRouteImport } from './routes/demo/workspace'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoTableRouteImport } from './routes/demo/table'
 import { Route as DemoStoreRouteImport } from './routes/demo/store'
+import { Route as DemoGridWorkspaceRouteImport } from './routes/demo/grid-workspace'
 import { Route as DemoDockRouteImport } from './routes/demo/dock'
 import { Route as DemoDbChatApiRouteImport } from './routes/demo/db-chat-api'
 import { Route as DemoDbChatRouteImport } from './routes/demo/db-chat'
@@ -55,6 +56,11 @@ const DemoTableRoute = DemoTableRouteImport.update({
 const DemoStoreRoute = DemoStoreRouteImport.update({
   id: '/demo/store',
   path: '/demo/store',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoGridWorkspaceRoute = DemoGridWorkspaceRouteImport.update({
+  id: '/demo/grid-workspace',
+  path: '/demo/grid-workspace',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoDockRoute = DemoDockRouteImport.update({
@@ -151,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/demo/db-chat': typeof DemoDbChatRoute
   '/demo/db-chat-api': typeof DemoDbChatApiRoute
   '/demo/dock': typeof DemoDockRoute
+  '/demo/grid-workspace': typeof DemoGridWorkspaceRoute
   '/demo/store': typeof DemoStoreRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
@@ -175,6 +182,7 @@ export interface FileRoutesByTo {
   '/demo/db-chat': typeof DemoDbChatRoute
   '/demo/db-chat-api': typeof DemoDbChatApiRoute
   '/demo/dock': typeof DemoDockRoute
+  '/demo/grid-workspace': typeof DemoGridWorkspaceRoute
   '/demo/store': typeof DemoStoreRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
@@ -200,6 +208,7 @@ export interface FileRoutesById {
   '/demo/db-chat': typeof DemoDbChatRoute
   '/demo/db-chat-api': typeof DemoDbChatApiRoute
   '/demo/dock': typeof DemoDockRoute
+  '/demo/grid-workspace': typeof DemoGridWorkspaceRoute
   '/demo/store': typeof DemoStoreRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
@@ -226,6 +235,7 @@ export interface FileRouteTypes {
     | '/demo/db-chat'
     | '/demo/db-chat-api'
     | '/demo/dock'
+    | '/demo/grid-workspace'
     | '/demo/store'
     | '/demo/table'
     | '/demo/tanstack-query'
@@ -250,6 +260,7 @@ export interface FileRouteTypes {
     | '/demo/db-chat'
     | '/demo/db-chat-api'
     | '/demo/dock'
+    | '/demo/grid-workspace'
     | '/demo/store'
     | '/demo/table'
     | '/demo/tanstack-query'
@@ -274,6 +285,7 @@ export interface FileRouteTypes {
     | '/demo/db-chat'
     | '/demo/db-chat-api'
     | '/demo/dock'
+    | '/demo/grid-workspace'
     | '/demo/store'
     | '/demo/table'
     | '/demo/tanstack-query'
@@ -299,6 +311,7 @@ export interface RootRouteChildren {
   DemoDbChatRoute: typeof DemoDbChatRoute
   DemoDbChatApiRoute: typeof DemoDbChatApiRoute
   DemoDockRoute: typeof DemoDockRoute
+  DemoGridWorkspaceRoute: typeof DemoGridWorkspaceRoute
   DemoStoreRoute: typeof DemoStoreRoute
   DemoTableRoute: typeof DemoTableRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
@@ -351,6 +364,13 @@ declare module '@tanstack/react-router' {
       path: '/demo/store'
       fullPath: '/demo/store'
       preLoaderRoute: typeof DemoStoreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo/grid-workspace': {
+      id: '/demo/grid-workspace'
+      path: '/demo/grid-workspace'
+      fullPath: '/demo/grid-workspace'
+      preLoaderRoute: typeof DemoGridWorkspaceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/dock': {
@@ -483,6 +503,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoDbChatRoute: DemoDbChatRoute,
   DemoDbChatApiRoute: DemoDbChatApiRoute,
   DemoDockRoute: DemoDockRoute,
+  DemoGridWorkspaceRoute: DemoGridWorkspaceRoute,
   DemoStoreRoute: DemoStoreRoute,
   DemoTableRoute: DemoTableRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,

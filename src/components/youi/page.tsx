@@ -406,8 +406,11 @@ Page.Aside = ({
 
 // Layer context for managing 3D layer positions
 import type {
+	Grid3DPosition,
+	GridWorkspaceConfig,
 	LayerConfig,
 	LayerContextType,
+	LayerGridCell,
 	LayerMetadata,
 	LayerState,
 	NavigationDirection,
@@ -424,6 +427,8 @@ interface LayerProviderProps {
 	transitionConfig?: Partial<TransitionConfig>;
 	/** Maximum history entries to keep */
 	maxHistory?: number;
+	/** Grid workspace configuration */
+	gridConfig?: Partial<GridWorkspaceConfig>;
 }
 
 /**
@@ -446,6 +451,7 @@ Page.LayerProvider = ({
 	children,
 	transitionConfig: initialTransitionConfig,
 	maxHistory = 20,
+	gridConfig: initialGridConfig,
 }: LayerProviderProps) => {
 	const [currentOffset, setCurrentOffset] = useState(0);
 	const [currentX, setCurrentX] = useState(0);
@@ -460,6 +466,17 @@ Page.LayerProvider = ({
 			damping: initialTransitionConfig?.damping ?? 25,
 			mass: initialTransitionConfig?.mass ?? 1,
 		});
+
+	const [gridConfig] = useState<GridWorkspaceConfig>({
+		spacing: {
+			x: initialGridConfig?.spacing?.x ?? 1000,
+			y: initialGridConfig?.spacing?.y ?? 1000,
+			z: initialGridConfig?.spacing?.z ?? 1000,
+		},
+		infinite: initialGridConfig?.infinite ?? false,
+		snapToGrid: initialGridConfig?.snapToGrid ?? true,
+		bounds: initialGridConfig?.bounds,
+	});
 
 	const layersRef = useRef<Map<string, LayerMetadata>>(new Map());
 	const layerOrderRef = useRef<string[]>([]);
@@ -617,39 +634,113 @@ Page.LayerProvider = ({
 		[navigateToIndex],
 	);
 
-	// Navigate in a direction (clamped to keep at least one layer in view)
+	// Navigate to a specific grid position
+	const navigateToGridPosition = useCallback(
+		(position: Grid3DPosition) => {
+			// Update all three axes
+			const newX = position.x * gridConfig.spacing.x;
+			const newY = position.y * gridConfig.spacing.y;
+			const newZ = -position.z * gridConfig.spacing.z;
+
+			setCurrentX(newX);
+			setCurrentY(newY);
+			setCurrentOffset(newZ);
+
+			// Update layer states based on which layer is at position (0,0,0) in screen space
+			layersRef.current.forEach((layer) => {
+				const layerScreenX = layer.x * gridConfig.spacing.x - newX;
+				const layerScreenY = layer.y * gridConfig.spacing.y - newY;
+				const layerScreenZ = -layer.index * gridConfig.spacing.z + newZ;
+
+				const isAtOrigin = layerScreenX === 0 && layerScreenY === 0 && layerScreenZ === 0;
+				const state: LayerState = isAtOrigin ? "active" : "inactive";
+				layersRef.current.set(layer.id, { ...layer, state });
+			});
+
+			// Find layer at this position and announce it
+			const layerAtPosition = Array.from(layersRef.current.values()).find(
+				(layer) =>
+					layer.x === position.x &&
+					layer.y === position.y &&
+					layer.index === position.z,
+			);
+
+			if (layerAtPosition && liveRegionRef.current) {
+				liveRegionRef.current.textContent = `Navigated to ${layerAtPosition.title} at position (${position.x}, ${position.y}, ${position.z})`;
+				addToHistory(layerAtPosition.id, layerAtPosition.index);
+			}
+		},
+		[gridConfig, addToHistory],
+	);
+
+	// Navigate in a direction
 	const navigate = useCallback(
 		(direction: NavigationDirection) => {
 			const totalLayers = layerOrderRef.current.length;
-			const currentIndex = -currentOffset / offset.current;
+			const currentIndex = -currentOffset / gridConfig.spacing.z;
+			const currentXPos = currentX / gridConfig.spacing.x;
+			const currentYPos = currentY / gridConfig.spacing.y;
 
-			console.log("Navigate", direction, "from index", currentIndex, "total layers", totalLayers);
-
-			let targetIndex = currentIndex;
+			let targetX = currentXPos;
+			let targetY = currentYPos;
+			let targetZ = currentIndex;
 
 			switch (direction) {
 				case "backward":
-                    if (currentIndex === totalLayers-1) return;
-					// Arrow UP - push current layer away (increase index)
-					// Blocked at last layer
-					targetIndex = currentIndex - 1;
+					// Move backward in Z (toward front)
+					targetZ = currentIndex - 1;
 					break;
 				case "forward":
-                    if (currentIndex === -totalLayers+1) return;
-					// Arrow DOWN - pull current layer toward you (decrease index)
-					// Blocked at first layer
-					targetIndex = currentIndex + 1;
-                    break;
+					// Move forward in Z (toward back)
+					targetZ = currentIndex + 1;
+					break;
+				case "left":
+					// Move left in X
+					targetX = currentXPos - 1;
+					break;
+				case "right":
+					// Move right in X
+					targetX = currentXPos + 1;
+					break;
+				case "up":
+					// Move up in Y
+					targetY = currentYPos + 1;
+					break;
+				case "down":
+					// Move down in Y
+					targetY = currentYPos - 1;
+					break;
+				case "first":
+					// Jump to first layer
+					targetZ = 0;
+					targetX = 0;
+					targetY = 0;
+					break;
+				case "last":
+					// Jump to last layer
+					targetZ = totalLayers - 1;
+					break;
 			}
 
-			console.log("Target index:", targetIndex);
-
-			// Only navigate if we're actually changing position
-			if (targetIndex !== currentIndex) {
-				navigateToIndex(targetIndex);
+			// Check bounds if not infinite grid
+			if (!gridConfig.infinite && gridConfig.bounds) {
+				const bounds = gridConfig.bounds;
+				if (
+					targetX < bounds.minX ||
+					targetX > bounds.maxX ||
+					targetY < bounds.minY ||
+					targetY > bounds.maxY ||
+					targetZ < bounds.minZ ||
+					targetZ > bounds.maxZ
+				) {
+					return; // Out of bounds, don't navigate
+				}
 			}
+
+			// Navigate to the new position
+			navigateToGridPosition({ x: targetX, y: targetY, z: targetZ });
 		},
-		[currentOffset, navigateToIndex],
+		[currentOffset, currentX, currentY, gridConfig, navigateToGridPosition],
 	);
 
 	// Go back in history
@@ -678,6 +769,25 @@ Page.LayerProvider = ({
 		[],
 	);
 
+	// Get layer at specific grid position
+	const getLayerAtPosition = useCallback((position: Grid3DPosition) => {
+		return Array.from(layersRef.current.values()).find(
+			(layer) =>
+				layer.x === position.x &&
+				layer.y === position.y &&
+				layer.index === position.z,
+		);
+	}, []);
+
+	// Get all occupied grid positions
+	const getOccupiedPositions = useCallback((): LayerGridCell[] => {
+		return Array.from(layersRef.current.values()).map((layer) => ({
+			position: { x: layer.x, y: layer.y, z: layer.index },
+			layerId: layer.id,
+			occupied: true,
+		}));
+	}, []);
+
 	// Enhanced keyboard navigation
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
@@ -693,21 +803,37 @@ Page.LayerProvider = ({
 				setShowKeyboardHints(false);
 			}
 
-			// Arrow navigation
+			// Arrow navigation with modifiers for different axes
 			if (e.key === "ArrowUp") {
 				e.preventDefault();
 				if (e.ctrlKey || e.metaKey) {
 					navigate("first");
+				} else if (e.shiftKey) {
+					// Shift + Up = Y axis (move up)
+					navigate("up");
 				} else {
+					// Normal Up = Z axis (move backward/toward front)
 					navigate("backward");
 				}
 			} else if (e.key === "ArrowDown") {
 				e.preventDefault();
 				if (e.ctrlKey || e.metaKey) {
 					navigate("last");
+				} else if (e.shiftKey) {
+					// Shift + Down = Y axis (move down)
+					navigate("down");
 				} else {
+					// Normal Down = Z axis (move forward/toward back)
 					navigate("forward");
 				}
+			} else if (e.key === "ArrowLeft") {
+				e.preventDefault();
+				// Left = X axis (move left)
+				navigate("left");
+			} else if (e.key === "ArrowRight") {
+				e.preventDefault();
+				// Right = X axis (move right)
+				navigate("right");
 			}
 
 			// Escape to return to first layer
@@ -738,8 +864,16 @@ Page.LayerProvider = ({
 		getAllLayers,
 		getActiveLayer,
 		currentOffset,
+		currentX,
+		currentY,
+		currentGridPosition: {
+			x: currentX / gridConfig.spacing.x,
+			y: currentY / gridConfig.spacing.y,
+			z: -currentOffset / gridConfig.spacing.z,
+		},
 		navigateToLayer,
 		navigateToIndex,
+		navigateToGridPosition,
 		navigate,
 		goBack,
 		goForward,
@@ -748,6 +882,9 @@ Page.LayerProvider = ({
 		transitionConfig,
 		setTransitionConfig,
 		prefersReducedMotion,
+		gridConfig,
+		getLayerAtPosition,
+		getOccupiedPositions,
 	};
 
 	return (
@@ -777,50 +914,94 @@ Page.LayerProvider = ({
 						className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
 						onClick={() => setShowKeyboardHints(false)}
 					>
-						<div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 max-w-md mx-4">
+						<div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 max-w-2xl mx-4">
 							<h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-								Keyboard Shortcuts
+								3D Grid Navigation Shortcuts
 							</h2>
-							<div className="space-y-2 text-sm">
-								<div className="flex justify-between">
-									<kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">
-										↑/↓
-									</kbd>
-									<span className="text-gray-700 dark:text-gray-300">
-										Navigate layers
-									</span>
+							<div className="grid grid-cols-2 gap-4">
+								<div>
+									<h3 className="text-sm font-semibold mb-2 text-gray-900 dark:text-white">
+										Z-Axis (Depth)
+									</h3>
+									<div className="space-y-2 text-sm">
+										<div className="flex justify-between gap-2">
+											<kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">
+												↑/↓
+											</kbd>
+											<span className="text-gray-700 dark:text-gray-300">
+												Forward/Back
+											</span>
+										</div>
+										<div className="flex justify-between gap-2">
+											<kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">
+												Ctrl + ↑/↓
+											</kbd>
+											<span className="text-gray-700 dark:text-gray-300">
+												First/Last
+											</span>
+										</div>
+									</div>
 								</div>
-								<div className="flex justify-between">
-									<kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">
-										Ctrl/⌘ + ↑/↓
-									</kbd>
-									<span className="text-gray-700 dark:text-gray-300">
-										First/Last layer
-									</span>
+								<div>
+									<h3 className="text-sm font-semibold mb-2 text-gray-900 dark:text-white">
+										X-Axis (Horizontal)
+									</h3>
+									<div className="space-y-2 text-sm">
+										<div className="flex justify-between gap-2">
+											<kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">
+												←/→
+											</kbd>
+											<span className="text-gray-700 dark:text-gray-300">
+												Left/Right
+											</span>
+										</div>
+									</div>
 								</div>
-								<div className="flex justify-between">
-									<kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">
-										Esc
-									</kbd>
-									<span className="text-gray-700 dark:text-gray-300">
-										Return to top
-									</span>
+								<div>
+									<h3 className="text-sm font-semibold mb-2 text-gray-900 dark:text-white">
+										Y-Axis (Vertical)
+									</h3>
+									<div className="space-y-2 text-sm">
+										<div className="flex justify-between gap-2">
+											<kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">
+												Shift + ↑/↓
+											</kbd>
+											<span className="text-gray-700 dark:text-gray-300">
+												Up/Down
+											</span>
+										</div>
+									</div>
 								</div>
-								<div className="flex justify-between">
-									<kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">
-										1-9
-									</kbd>
-									<span className="text-gray-700 dark:text-gray-300">
-										Jump to layer
-									</span>
-								</div>
-								<div className="flex justify-between">
-									<kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">
-										?
-									</kbd>
-									<span className="text-gray-700 dark:text-gray-300">
-										Toggle help
-									</span>
+								<div>
+									<h3 className="text-sm font-semibold mb-2 text-gray-900 dark:text-white">
+										Other
+									</h3>
+									<div className="space-y-2 text-sm">
+										<div className="flex justify-between gap-2">
+											<kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">
+												Esc
+											</kbd>
+											<span className="text-gray-700 dark:text-gray-300">
+												Origin (0,0,0)
+											</span>
+										</div>
+										<div className="flex justify-between gap-2">
+											<kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">
+												1-9
+											</kbd>
+											<span className="text-gray-700 dark:text-gray-300">
+												Jump to layer
+											</span>
+										</div>
+										<div className="flex justify-between gap-2">
+											<kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">
+												?
+											</kbd>
+											<span className="text-gray-700 dark:text-gray-300">
+												Toggle help
+											</span>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -909,16 +1090,19 @@ Page.Layer = ({
 		}
 	}, [context, title, type, description, priority, customData]);
 
-	// Calculate z-position based on index and offset
+	// Calculate 3D position based on layer config and current viewport
+	const layerMetadata = context?.getLayer(layerIdRef.current);
+	const xPosition = layerMetadata && context ? layerMetadata.x * context.gridConfig.spacing.x - context.currentX : 0;
+	const yPosition = layerMetadata && context ? layerMetadata.y * context.gridConfig.spacing.y - context.currentY : 0;
 	const zPosition =
 		layerIndex !== null && context
-			? -layerIndex * 1000 + context.currentOffset
+			? -layerIndex * context.gridConfig.spacing.z + context.currentOffset
 			: 0;
 
-	// Update active state
+	// Update active state - layer is active when at origin (0, 0, 0) in screen space
 	useEffect(() => {
-		setIsActive(zPosition === 0);
-	}, [zPosition]);
+		setIsActive(xPosition === 0 && yPosition === 0 && zPosition === 0);
+	}, [xPosition, yPosition, zPosition]);
 
 	// Focus management
 	useEffect(() => {
@@ -1010,6 +1194,8 @@ Page.Layer = ({
 				scale,
 				opacity,
 				filter: filterString,
+				x: xPosition,
+				y: yPosition,
 				z: zPosition,
 			}}
 			transition={transitionProps}
@@ -1031,7 +1217,7 @@ Page.Layer = ({
 			{/* Debug label */}
 			{showDebug && (
 				<div className="absolute top-4 left-4 text-white bg-black/50 px-2 py-1 rounded text-xs z-50 font-mono">
-					Layer {layerIndex} | Z: {zPosition}px | {type} |{" "}
+					Layer {layerIndex} | Pos({layerMetadata?.x},{layerMetadata?.y},{layerIndex}) | Screen({xPosition.toFixed(0)},{yPosition.toFixed(0)},{zPosition.toFixed(0)}) | {type} |{" "}
 					{isActive ? "ACTIVE" : "inactive"}
 				</div>
 			)}

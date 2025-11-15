@@ -172,10 +172,18 @@ export const useLayerNavigation = () => {
 		[context],
 	);
 
+	const navigateToGridPosition = useCallback(
+		(position: { x: number; y: number; z: number }) => {
+			context.navigateToGridPosition(position);
+		},
+		[context],
+	);
+
 	return {
 		navigate,
 		navigateToLayer,
 		navigateToIndex,
+		navigateToGridPosition,
 		goBack: context.goBack,
 		goForward: context.goForward,
 		canGoBack,
