@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DemoWorkspaceRouteImport } from './routes/demo/workspace'
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoTableRouteImport } from './routes/demo/table'
 import { Route as DemoStoreRouteImport } from './routes/demo/store'
@@ -17,6 +18,7 @@ import { Route as DemoDockRouteImport } from './routes/demo/dock'
 import { Route as DemoDbChatApiRouteImport } from './routes/demo/db-chat-api'
 import { Route as DemoDbChatRouteImport } from './routes/demo/db-chat'
 import { Route as DemoConvexRouteImport } from './routes/demo/convex'
+import { Route as DemoAdvancedLayersRouteImport } from './routes/demo/advanced-layers'
 import { Route as Demo3dLayersRouteImport } from './routes/demo/3d-layers'
 import { Route as DemoStartServerFuncsRouteImport } from './routes/demo/start.server-funcs'
 import { Route as DemoStartApiRequestRouteImport } from './routes/demo/start.api-request'
@@ -33,6 +35,11 @@ import { Route as DemoStartSsrDataOnlyRouteImport } from './routes/demo/start.ss
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoWorkspaceRoute = DemoWorkspaceRouteImport.update({
+  id: '/demo/workspace',
+  path: '/demo/workspace',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
@@ -68,6 +75,11 @@ const DemoDbChatRoute = DemoDbChatRouteImport.update({
 const DemoConvexRoute = DemoConvexRouteImport.update({
   id: '/demo/convex',
   path: '/demo/convex',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoAdvancedLayersRoute = DemoAdvancedLayersRouteImport.update({
+  id: '/demo/advanced-layers',
+  path: '/demo/advanced-layers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Demo3dLayersRoute = Demo3dLayersRouteImport.update({
@@ -134,6 +146,7 @@ const DemoStartSsrDataOnlyRoute = DemoStartSsrDataOnlyRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/demo/3d-layers': typeof Demo3dLayersRoute
+  '/demo/advanced-layers': typeof DemoAdvancedLayersRoute
   '/demo/convex': typeof DemoConvexRoute
   '/demo/db-chat': typeof DemoDbChatRoute
   '/demo/db-chat-api': typeof DemoDbChatApiRoute
@@ -141,6 +154,7 @@ export interface FileRoutesByFullPath {
   '/demo/store': typeof DemoStoreRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/demo/workspace': typeof DemoWorkspaceRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
   '/demo/form/address': typeof DemoFormAddressRoute
@@ -156,6 +170,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/demo/3d-layers': typeof Demo3dLayersRoute
+  '/demo/advanced-layers': typeof DemoAdvancedLayersRoute
   '/demo/convex': typeof DemoConvexRoute
   '/demo/db-chat': typeof DemoDbChatRoute
   '/demo/db-chat-api': typeof DemoDbChatApiRoute
@@ -163,6 +178,7 @@ export interface FileRoutesByTo {
   '/demo/store': typeof DemoStoreRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/demo/workspace': typeof DemoWorkspaceRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
   '/demo/form/address': typeof DemoFormAddressRoute
@@ -179,6 +195,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/demo/3d-layers': typeof Demo3dLayersRoute
+  '/demo/advanced-layers': typeof DemoAdvancedLayersRoute
   '/demo/convex': typeof DemoConvexRoute
   '/demo/db-chat': typeof DemoDbChatRoute
   '/demo/db-chat-api': typeof DemoDbChatApiRoute
@@ -186,6 +203,7 @@ export interface FileRoutesById {
   '/demo/store': typeof DemoStoreRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
+  '/demo/workspace': typeof DemoWorkspaceRoute
   '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/api/tq-todos': typeof DemoApiTqTodosRoute
   '/demo/form/address': typeof DemoFormAddressRoute
@@ -203,6 +221,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/demo/3d-layers'
+    | '/demo/advanced-layers'
     | '/demo/convex'
     | '/demo/db-chat'
     | '/demo/db-chat-api'
@@ -210,6 +229,7 @@ export interface FileRouteTypes {
     | '/demo/store'
     | '/demo/table'
     | '/demo/tanstack-query'
+    | '/demo/workspace'
     | '/demo/api/names'
     | '/demo/api/tq-todos'
     | '/demo/form/address'
@@ -225,6 +245,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/demo/3d-layers'
+    | '/demo/advanced-layers'
     | '/demo/convex'
     | '/demo/db-chat'
     | '/demo/db-chat-api'
@@ -232,6 +253,7 @@ export interface FileRouteTypes {
     | '/demo/store'
     | '/demo/table'
     | '/demo/tanstack-query'
+    | '/demo/workspace'
     | '/demo/api/names'
     | '/demo/api/tq-todos'
     | '/demo/form/address'
@@ -247,6 +269,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/demo/3d-layers'
+    | '/demo/advanced-layers'
     | '/demo/convex'
     | '/demo/db-chat'
     | '/demo/db-chat-api'
@@ -254,6 +277,7 @@ export interface FileRouteTypes {
     | '/demo/store'
     | '/demo/table'
     | '/demo/tanstack-query'
+    | '/demo/workspace'
     | '/demo/api/names'
     | '/demo/api/tq-todos'
     | '/demo/form/address'
@@ -270,6 +294,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   Demo3dLayersRoute: typeof Demo3dLayersRoute
+  DemoAdvancedLayersRoute: typeof DemoAdvancedLayersRoute
   DemoConvexRoute: typeof DemoConvexRoute
   DemoDbChatRoute: typeof DemoDbChatRoute
   DemoDbChatApiRoute: typeof DemoDbChatApiRoute
@@ -277,6 +302,7 @@ export interface RootRouteChildren {
   DemoStoreRoute: typeof DemoStoreRoute
   DemoTableRoute: typeof DemoTableRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
+  DemoWorkspaceRoute: typeof DemoWorkspaceRoute
   DemoApiNamesRoute: typeof DemoApiNamesRoute
   DemoApiTqTodosRoute: typeof DemoApiTqTodosRoute
   DemoFormAddressRoute: typeof DemoFormAddressRoute
@@ -297,6 +323,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo/workspace': {
+      id: '/demo/workspace'
+      path: '/demo/workspace'
+      fullPath: '/demo/workspace'
+      preLoaderRoute: typeof DemoWorkspaceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/tanstack-query': {
@@ -346,6 +379,13 @@ declare module '@tanstack/react-router' {
       path: '/demo/convex'
       fullPath: '/demo/convex'
       preLoaderRoute: typeof DemoConvexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo/advanced-layers': {
+      id: '/demo/advanced-layers'
+      path: '/demo/advanced-layers'
+      fullPath: '/demo/advanced-layers'
+      preLoaderRoute: typeof DemoAdvancedLayersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/3d-layers': {
@@ -438,6 +478,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   Demo3dLayersRoute: Demo3dLayersRoute,
+  DemoAdvancedLayersRoute: DemoAdvancedLayersRoute,
   DemoConvexRoute: DemoConvexRoute,
   DemoDbChatRoute: DemoDbChatRoute,
   DemoDbChatApiRoute: DemoDbChatApiRoute,
@@ -445,6 +486,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoStoreRoute: DemoStoreRoute,
   DemoTableRoute: DemoTableRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
+  DemoWorkspaceRoute: DemoWorkspaceRoute,
   DemoApiNamesRoute: DemoApiNamesRoute,
   DemoApiTqTodosRoute: DemoApiTqTodosRoute,
   DemoFormAddressRoute: DemoFormAddressRoute,

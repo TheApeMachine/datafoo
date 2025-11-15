@@ -194,7 +194,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 								/>
 							</Page.Nav>
 							<Page.Main content="center">{children}</Page.Main>
-							<Page.Aside>TODO: Add aside</Page.Aside>
+							<Page.Aside></Page.Aside>
 							<Page.Footer>
 								<Dock items={[]} />
 							</Page.Footer>
