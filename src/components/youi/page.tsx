@@ -533,6 +533,7 @@ Page.LayerProvider = ({
 				adjacent: config.adjacent ?? {},
 			};
 
+			console.log(`Registered layer "${config.title}" at position (${x}, ${y}, ${z})`);
 			layersRef.current.set(id, metadata);
 			return index;
 		},
@@ -1044,6 +1045,9 @@ Page.Layer = ({
 	description,
 	priority,
 	customData,
+	x,
+	y,
+	z,
 	showDebug = false,
 	disableGestures = false,
 }: LayerProps) => {
@@ -1062,6 +1066,9 @@ Page.Layer = ({
 				description,
 				priority,
 				customData,
+				x,
+				y,
+				z,
 			};
 			const index = context.registerLayer(layerIdRef.current, config);
 			setLayerIndex(index);
@@ -1070,7 +1077,7 @@ Page.Layer = ({
 				context.unregisterLayer(layerIdRef.current);
 			};
 		}
-	}, [context, title, type, description, priority, customData]);
+	}, [context, title, type, description, priority, customData, x, y, z]);
 
 	// Calculate 3D position based on layer config and current viewport
 	const layerMetadata = context?.getLayer(layerIdRef.current);
