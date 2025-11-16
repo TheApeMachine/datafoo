@@ -3,7 +3,7 @@
  */
 
 import { motion } from "motion/react";
-import { useActiveLayer, useAllLayers, useLayerNavigation } from "./layer-hooks";
+import { useLayerContext, useActiveLayer, useAllLayers, useLayerNavigation } from "./layer-hooks";
 
 interface LayerIndicatorProps {
 	/** Position of the indicator */
@@ -326,6 +326,201 @@ export const LayerBreadcrumb = () => {
 							</div>
 						);
 					})}
+				</div>
+			</div>
+		</motion.div>
+	);
+};
+
+/**
+ * Grid3DIndicator - 3D grid visualization showing layer positions in space
+ */
+interface Grid3DIndicatorProps {
+	/** Position of the indicator */
+	position?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
+	/** Size of the grid view */
+	size?: number;
+	/** Grid range to show (cells in each direction from origin) */
+	range?: number;
+	/** Hide the indicator */
+	hidden?: boolean;
+}
+
+export const Grid3DIndicator = ({
+	position = "top-right",
+	size = 200,
+	range = 2,
+	hidden = false,
+}: Grid3DIndicatorProps) => {
+	const context = useLayerContext();
+	const activeLayer = useActiveLayer();
+	const allLayers = useAllLayers();
+
+	if (hidden) {
+		return null;
+	}
+
+	const positionClasses = {
+		"top-left": "top-4 left-4",
+		"top-right": "top-4 right-4",
+		"bottom-left": "bottom-4 left-4",
+		"bottom-right": "bottom-4 right-4",
+	};
+
+	const gridPos = context.currentGridPosition;
+	const cellSize = size / ((range * 2) + 1);
+
+	return (
+		<motion.div
+			className={`fixed ${positionClasses[position]} z-40 pointer-events-auto`}
+			initial={{ opacity: 0, scale: 0.8 }}
+			animate={{ opacity: 1, scale: 1 }}
+			transition={{ type: "spring", stiffness: 300, damping: 20 }}
+		>
+			<div
+				className="bg-white/10 dark:bg-black/30 backdrop-blur-md rounded-lg border border-white/20 dark:border-gray-700 shadow-lg p-4"
+				style={{ width: size + 32, height: size + 80 }}
+			>
+				<div className="text-xs font-semibold text-white dark:text-gray-300 mb-2 text-center">
+					3D Grid Position
+				</div>
+
+				{/* Grid visualization */}
+				<div
+					className="relative bg-black/20 rounded"
+					style={{ width: size, height: size }}
+				>
+					{/* Grid lines */}
+					<svg
+						className="absolute inset-0"
+						width={size}
+						height={size}
+						style={{ overflow: "visible" }}
+					>
+						{/* Vertical lines */}
+						{Array.from({ length: (range * 2) + 2 }).map((_, i) => (
+							<line
+								key={`v-${i}`}
+								x1={i * cellSize}
+								y1={0}
+								x2={i * cellSize}
+								y2={size}
+								stroke="rgba(255,255,255,0.1)"
+								strokeWidth="1"
+							/>
+						))}
+						{/* Horizontal lines */}
+						{Array.from({ length: (range * 2) + 2 }).map((_, i) => (
+							<line
+								key={`h-${i}`}
+								x1={0}
+								y1={i * cellSize}
+								x2={size}
+								y2={i * cellSize}
+								stroke="rgba(255,255,255,0.1)"
+								strokeWidth="1"
+							/>
+						))}
+
+						{/* Center crosshair */}
+						<line
+							x1={size / 2}
+							y1={0}
+							x2={size / 2}
+							y2={size}
+							stroke="rgba(59, 130, 246, 0.5)"
+							strokeWidth="2"
+						/>
+						<line
+							x1={0}
+							y1={size / 2}
+							x2={size}
+							y2={size / 2}
+							stroke="rgba(59, 130, 246, 0.5)"
+							strokeWidth="2"
+						/>
+
+						{/* Layers as dots */}
+						{allLayers.map((layer) => {
+							// Calculate position relative to current viewport
+							const relX = layer.x - gridPos.x;
+							const relY = layer.y - gridPos.y;
+							const relZ = layer.z - gridPos.z;
+
+							// Only show layers within range
+							if (Math.abs(relX) > range || Math.abs(relY) > range) {
+								return null;
+							}
+
+							const screenX = (relX + range) * cellSize + cellSize / 2;
+							const screenY = (relY + range) * cellSize + cellSize / 2;
+
+							const isActive = layer.id === activeLayer?.id;
+							const isOnSameZ = relZ === 0;
+
+							return (
+								<g key={layer.id}>
+									<circle
+										cx={screenX}
+										cy={screenY}
+										r={isActive ? 6 : 4}
+										fill={
+											isActive
+												? "#3b82f6"
+												: isOnSameZ
+													? "#10b981"
+													: "#6b7280"
+										}
+										opacity={isActive ? 1 : isOnSameZ ? 0.8 : 0.3}
+										stroke={isActive ? "#fff" : "none"}
+										strokeWidth={isActive ? 2 : 0}
+									/>
+									{/* Z-depth indicator */}
+									{relZ !== 0 && (
+										<text
+											x={screenX}
+											y={screenY - 8}
+											fontSize="8"
+											fill="#fff"
+											textAnchor="middle"
+											opacity={0.6}
+										>
+											{relZ > 0 ? `+${relZ}` : relZ}
+										</text>
+									)}
+								</g>
+							);
+						})}
+					</svg>
+				</div>
+
+				{/* Position info */}
+				<div className="mt-2 text-center">
+					<div className="text-xs font-mono text-white dark:text-gray-300">
+						X: {gridPos.x.toFixed(0)} Y: {gridPos.y.toFixed(0)} Z:{" "}
+						{gridPos.z.toFixed(0)}
+					</div>
+					{activeLayer && (
+						<div className="text-xs text-white/60 dark:text-gray-400 mt-1 truncate">
+							{activeLayer.title}
+						</div>
+					)}
+				</div>
+
+				{/* Legend */}
+				<div className="mt-2 flex items-center justify-center gap-3 text-xs">
+					<div className="flex items-center gap-1">
+						<div className="w-2 h-2 rounded-full bg-blue-500" />
+						<span className="text-white/60">Active</span>
+					</div>
+					<div className="flex items-center gap-1">
+						<div className="w-2 h-2 rounded-full bg-green-500" />
+						<span className="text-white/60">Same Z</span>
+					</div>
+					<div className="flex items-center gap-1">
+						<div className="w-2 h-2 rounded-full bg-gray-500 opacity-30" />
+						<span className="text-white/60">Other Z</span>
+					</div>
 				</div>
 			</div>
 		</motion.div>

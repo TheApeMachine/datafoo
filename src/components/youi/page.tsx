@@ -7,6 +7,8 @@ import {
 	useCallback,
 	useContext,
 	useEffect,
+	useEffectEvent,
+	useMemo,
 	useRef,
 	useState,
 } from "react";
@@ -404,639 +406,229 @@ Page.Aside = ({
 	);
 };
 
-// Layer context for managing 3D layer positions
-import type {
-	LayerConfig,
-	LayerContextType,
-	LayerMetadata,
-	LayerState,
-	NavigationDirection,
-	NavigationHistoryEntry,
-	TransitionConfig,
-} from "./layer-types";
+type Position3D = { x: number; y: number; z: number };
 
-// Export the LayerContext so hooks can use it
-export const LayerContext = createContext<LayerContextType | null>(null);
+export type LayerConfig = {
+	id: string;
+	position: Position3D;
+	section: Record<string, unknown>;
+};
 
-interface LayerProviderProps {
-	children: ReactNode;
-	/** Initial transition configuration */
-	transitionConfig?: Partial<TransitionConfig>;
-	/** Maximum history entries to keep */
-	maxHistory?: number;
-}
+type LayerContextValue = {
+	ptr: LayerConfig | null;
+	next: LayerConfig | null;
+	insertMode: boolean;
+	onComplete: () => void;
+};
 
-/**
- * LayerProvider - Manages the enhanced 3D layer system with comprehensive navigation.
- *
- * Wraps Page.Layer components to enable 3D stacking with multiple navigation methods:
- * - Arrow Up/Down: Navigate through layers
- * - Escape: Return to top layer
- * - Ctrl/Cmd + Arrow: Jump to first/last layer
- * - 1-9: Jump to specific layer index
- * - ?: Show keyboard shortcuts
- *
- * @example
- * <Page.LayerProvider>
- *   <Page.Layer title="Front Layer">Content</Page.Layer>
- *   <Page.Layer title="Back Layer">Content</Page.Layer>
- * </Page.LayerProvider>
- */
-Page.LayerProvider = ({
-	children,
-	transitionConfig: initialTransitionConfig,
-	maxHistory = 20,
-}: LayerProviderProps) => {
-	const [currentOffset, setCurrentOffset] = useState(0);
-	const [currentX, setCurrentX] = useState(0);
-	const [currentY, setCurrentY] = useState(0);
-	const [showKeyboardHints, setShowKeyboardHints] = useState(false);
-	const [history, setHistory] = useState<NavigationHistoryEntry[]>([]);
-	const [historyIndex, setHistoryIndex] = useState(-1);
-	const [transitionConfig, setTransitionConfigState] =
-		useState<TransitionConfig>({
-			type: "spring",
-			stiffness: initialTransitionConfig?.stiffness ?? 100,
-			damping: initialTransitionConfig?.damping ?? 25,
-			mass: initialTransitionConfig?.mass ?? 1,
-		});
+const LayerContext = createContext<LayerContextValue | null>(null);
 
-	const layersRef = useRef<Map<string, LayerMetadata>>(new Map());
-	const layerOrderRef = useRef<string[]>([]);
-	const offset = useRef(1000);
-	const liveRegionRef = useRef<HTMLDivElement>(null);
+Page.LayerProvider = ({ children }: { children: ReactNode }) => {
+	const [ptr, setPtr] = useState<LayerConfig | null>({
+		id: "root",
+		position: { x: 0, y: 0, z: 0 },
+		section: {},
+	});
+	const [next, setNext] = useState<LayerConfig | null>(null);
+	const [insertMode, setInsertMode] = useState(false);
 
-	// Check for reduced motion preference
-	const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+	const layersRef = useRef<Map<string, LayerConfig>>(new Map());
 
+	// Initialize the root layer
 	useEffect(() => {
-		const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-		setPrefersReducedMotion(mediaQuery.matches);
-
-		const handler = (e: MediaQueryListEvent) => {
-			setPrefersReducedMotion(e.matches);
-		};
-
-		mediaQuery.addEventListener("change", handler);
-		return () => mediaQuery.removeEventListener("change", handler);
-	}, []);
-
-	// Register a layer with metadata
-	const registerLayer = useCallback(
-		(id: string, config: LayerConfig): number => {
-			const existingLayer = layersRef.current.get(id);
-
-			if (existingLayer) {
-				return existingLayer.index;
-			}
-
-			const index = layerOrderRef.current.length;
-			layerOrderRef.current.push(id);
-
-			const metadata: LayerMetadata = {
-				id,
-				type: config.type ?? "custom",
-				title: config.title,
-				description: config.description,
-				priority: config.priority,
-				state: index === 0 ? "active" : "inactive",
-				customData: config.customData,
-				index,
-				zPosition: -index * offset.current,
-				x: config.x ?? 0,
-				y: config.y ?? 0,
-				adjacent: config.adjacent ?? {},
-			};
-
-			layersRef.current.set(id, metadata);
-			return index;
-		},
-		[],
-	);
-
-	// Unregister a layer
-	const unregisterLayer = useCallback((id: string) => {
-		layersRef.current.delete(id);
-		const index = layerOrderRef.current.indexOf(id);
-		if (index > -1) {
-			layerOrderRef.current.splice(index, 1);
-		}
-	}, []);
-
-	// Update layer metadata
-	const updateLayer = useCallback(
-		(id: string, updates: Partial<LayerConfig>) => {
-			const layer = layersRef.current.get(id);
-			if (layer) {
-				layersRef.current.set(id, {
-					...layer,
-					...updates,
-				});
-			}
-		},
-		[],
-	);
-
-	// Get layer metadata
-	const getLayer = useCallback((id: string) => {
-		return layersRef.current.get(id);
-	}, []);
-
-	// Get all layers
-	const getAllLayers = useCallback(() => {
-		return Array.from(layersRef.current.values());
-	}, []);
-
-	// Get active layer
-	const getActiveLayer = useCallback(() => {
-		return Array.from(layersRef.current.values()).find(
-			(layer) => layer.state === "active",
-		);
-	}, []);
-
-	// Add to navigation history
-	const addToHistory = useCallback(
-		(layerId: string, index: number) => {
-			setHistory((prev) => {
-				const newHistory = prev.slice(0, historyIndex + 1);
-				newHistory.push({
-					layerId,
-					timestamp: Date.now(),
-					index,
-				});
-				// Limit history size
-				if (newHistory.length > maxHistory) {
-					newHistory.shift();
-				}
-				return newHistory;
+		const rootKey = "0,0,0";
+		if (!layersRef.current.has(rootKey)) {
+			layersRef.current.set(rootKey, {
+				id: "root",
+				position: { x: 0, y: 0, z: 0 },
+				section: {},
 			});
-			setHistoryIndex((prev) => Math.min(prev + 1, maxHistory - 1));
-		},
-		[historyIndex, maxHistory],
-	);
+		}
+	}, []);
 
-	// Navigate to specific layer (allows going beyond boundaries for continuous navigation)
-	const navigateToIndex = useCallback(
-		(targetIndex: number) => {
-			const totalLayers = layerOrderRef.current.length;
+	const onComplete = useCallback(() => {
+		setPtr(next);
+		setNext(null);
+	}, [next]);
 
-			// Allow navigation beyond boundaries - layers will just be off-screen
-			const newOffset = -targetIndex * offset.current;
-			setCurrentOffset(newOffset);
-
-			// Update layer states - find which layer is actually at z=0
-			layersRef.current.forEach((layer) => {
-				const layerZPos = -layer.index * offset.current + newOffset;
-				const state: LayerState = layerZPos === 0 ? "active" : "inactive";
-				layersRef.current.set(layer.id, { ...layer, state });
+	const addLayer = useCallback((position: Position3D) => {
+		const key = `${position.x},${position.y},${position.z}`;
+		if (!layersRef.current.has(key)) {
+			layersRef.current.set(key, {
+				id: key,
+				position,
+				section: {},
 			});
-
-			// Announce to screen reader if we're on a valid layer
-			if (targetIndex >= 0 && targetIndex < totalLayers) {
-				const targetLayer = layersRef.current.get(
-					layerOrderRef.current[targetIndex],
-				);
-				if (liveRegionRef.current && targetLayer) {
-					liveRegionRef.current.textContent = `Navigated to ${targetLayer.title}`;
-				}
-				// Add to history only for valid layers
-				addToHistory(layerOrderRef.current[targetIndex], targetIndex);
-			}
-		},
-		[addToHistory, offset],
-	);
-
-	// Navigate by layer ID
-	const navigateToLayer = useCallback(
-		(layerId: string) => {
-			const index = layerOrderRef.current.indexOf(layerId);
-			if (index > -1) {
-				navigateToIndex(index);
-			}
-		},
-		[navigateToIndex],
-	);
-
-	// Navigate in a direction (clamped to keep at least one layer in view)
-	const navigate = useCallback(
-		(direction: NavigationDirection) => {
-			const totalLayers = layerOrderRef.current.length;
-			const currentIndex = -currentOffset / offset.current;
-
-			console.log("Navigate", direction, "from index", currentIndex, "total layers", totalLayers);
-
-			let targetIndex = currentIndex;
-
-			switch (direction) {
-				case "backward":
-                    if (currentIndex === totalLayers-1) return;
-					// Arrow UP - push current layer away (increase index)
-					// Blocked at last layer
-					targetIndex = currentIndex - 1;
-					break;
-				case "forward":
-                    if (currentIndex === -totalLayers+1) return;
-					// Arrow DOWN - pull current layer toward you (decrease index)
-					// Blocked at first layer
-					targetIndex = currentIndex + 1;
-                    break;
-			}
-
-			console.log("Target index:", targetIndex);
-
-			// Only navigate if we're actually changing position
-			if (targetIndex !== currentIndex) {
-				navigateToIndex(targetIndex);
-			}
-		},
-		[currentOffset, navigateToIndex],
-	);
-
-	// Go back in history
-	const goBack = useCallback(() => {
-		if (historyIndex > 0) {
-			const prevEntry = history[historyIndex - 1];
-			setHistoryIndex(historyIndex - 1);
-			navigateToIndex(prevEntry.index);
 		}
-	}, [history, historyIndex, navigateToIndex]);
+	}, []);
 
-	// Go forward in history
-	const goForward = useCallback(() => {
-		if (historyIndex < history.length - 1) {
-			const nextEntry = history[historyIndex + 1];
-			setHistoryIndex(historyIndex + 1);
-			navigateToIndex(nextEntry.index);
-		}
-	}, [history, historyIndex, navigateToIndex]);
+	const moveTo = useEffectEvent((event: KeyboardEvent) => {
+		let newPosition: Position3D | null = null;
 
-	// Set transition config
-	const setTransitionConfig = useCallback(
-		(config: Partial<TransitionConfig>) => {
-			setTransitionConfigState((prev) => ({ ...prev, ...config }));
-		},
-		[],
-	);
-
-	// Enhanced keyboard navigation
-	useEffect(() => {
-		const handleKeyDown = (e: KeyboardEvent) => {
-			// Show keyboard hints
-			if (e.key === "?") {
-				e.preventDefault();
-				setShowKeyboardHints((prev) => !prev);
+		switch (event.key) {
+			case "+":
+				setInsertMode(true);
 				return;
+			case "ArrowUp":
+				newPosition = {
+					x: ptr?.position?.x ?? 0,
+					y: (ptr?.position?.y ?? 0) - 1,
+					z: ptr?.position?.z ?? 0,
+				};
+				break;
+			case "ArrowDown":
+				newPosition = {
+					x: ptr?.position?.x ?? 0,
+					y: (ptr?.position?.y ?? 0) + 1,
+					z: ptr?.position?.z ?? 0,
+				};
+				break;
+			case "ArrowLeft":
+				newPosition = {
+					x: (ptr?.position?.x ?? 0) - 1,
+					y: ptr?.position?.y ?? 0,
+					z: ptr?.position?.z ?? 0,
+				};
+				break;
+			case "ArrowRight":
+				newPosition = {
+					x: (ptr?.position?.x ?? 0) + 1,
+					y: ptr?.position?.y ?? 0,
+					z: ptr?.position?.z ?? 0,
+				};
+				break;
+			case "0":
+			case "1":
+			case "2":
+			case "3":
+			case "4":
+			case "5":
+			case "6":
+			case "7":
+			case "8":
+			case "9":
+				newPosition = {
+					x: ptr?.position?.x ?? 0,
+					y: ptr?.position?.y ?? 0,
+					z: Number(event.key),
+				};
+				break;
+			default:
+				return;
+		}
+
+		if (newPosition) {
+			// Add layer if in insert mode
+			if (insertMode) {
+				addLayer(newPosition);
+				setInsertMode(false); // Exit insert mode after adding
 			}
 
-			// Hide hints on any other key
-			if (showKeyboardHints && e.key !== "?") {
-				setShowKeyboardHints(false);
+			// Navigate to layer if it exists
+			const key = `${newPosition.x},${newPosition.y},${newPosition.z}`;
+			const layer = layersRef.current.get(key);
+			if (layer) {
+				setNext(layer);
 			}
+		}
+	});
 
-			// Arrow navigation
-			if (e.key === "ArrowUp") {
-				e.preventDefault();
-				if (e.ctrlKey || e.metaKey) {
-					navigate("first");
-				} else {
-					navigate("backward");
-				}
-			} else if (e.key === "ArrowDown") {
-				e.preventDefault();
-				if (e.ctrlKey || e.metaKey) {
-					navigate("last");
-				} else {
-					navigate("forward");
-				}
-			}
+	useEffect(() => {
+		window.addEventListener("keydown", moveTo);
+		return () => window.removeEventListener("keydown", moveTo);
+	}, [moveTo]);
 
-			// Escape to return to first layer
-			else if (e.key === "Escape") {
-				e.preventDefault();
-				navigate("first");
-			}
-
-			// Number keys for direct navigation
-			else if (e.key >= "1" && e.key <= "9") {
-				const index = -Number.parseInt(e.key)+1;
-				if (index < layerOrderRef.current.length) {
-					e.preventDefault();
-					navigateToIndex(index);
-				}
-			}
-		};
-
-		window.addEventListener("keyup", handleKeyDown);
-		return () => window.removeEventListener("keyup", handleKeyDown);
-	}, [navigate, navigateToIndex, showKeyboardHints]);
-
-	const contextValue: LayerContextType = {
-		registerLayer,
-		unregisterLayer,
-		updateLayer,
-		getLayer,
-		getAllLayers,
-		getActiveLayer,
-		currentOffset,
-		navigateToLayer,
-		navigateToIndex,
-		navigate,
-		goBack,
-		goForward,
-		history,
-		historyIndex,
-		transitionConfig,
-		setTransitionConfig,
-		prefersReducedMotion,
-	};
+	const value = useMemo(
+		() => ({
+			ptr,
+			next,
+			insertMode,
+			onComplete,
+		}),
+		[ptr, next, insertMode, onComplete],
+	);
 
 	return (
-		<LayerContext.Provider value={contextValue}>
-			<div
-				className="absolute inset-0 w-full h-full"
-				style={{
-					perspective: "500px",
-					perspectiveOrigin: "50% 50%",
-					transformStyle: "preserve-3d",
-				}}
-			>
-				{children}
-
-				{/* Screen reader live region for layer announcements */}
-				<div
-					ref={liveRegionRef}
-					className="sr-only"
-					role="status"
-					aria-live="polite"
-					aria-atomic="true"
-				/>
-
-				{/* Keyboard hints overlay */}
-				{showKeyboardHints && (
-					<div
-						className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-						onClick={() => setShowKeyboardHints(false)}
-					>
-						<div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 max-w-md mx-4">
-							<h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-								Keyboard Shortcuts
-							</h2>
-							<div className="space-y-2 text-sm">
-								<div className="flex justify-between">
-									<kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">
-										↑/↓
-									</kbd>
-									<span className="text-gray-700 dark:text-gray-300">
-										Navigate layers
-									</span>
-								</div>
-								<div className="flex justify-between">
-									<kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">
-										Ctrl/⌘ + ↑/↓
-									</kbd>
-									<span className="text-gray-700 dark:text-gray-300">
-										First/Last layer
-									</span>
-								</div>
-								<div className="flex justify-between">
-									<kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">
-										Esc
-									</kbd>
-									<span className="text-gray-700 dark:text-gray-300">
-										Return to top
-									</span>
-								</div>
-								<div className="flex justify-between">
-									<kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">
-										1-9
-									</kbd>
-									<span className="text-gray-700 dark:text-gray-300">
-										Jump to layer
-									</span>
-								</div>
-								<div className="flex justify-between">
-									<kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">
-										?
-									</kbd>
-									<span className="text-gray-700 dark:text-gray-300">
-										Toggle help
-									</span>
-								</div>
-							</div>
-						</div>
-					</div>
-				)}
-			</div>
-		</LayerContext.Provider>
+		<LayerContext.Provider value={value}>{children}</LayerContext.Provider>
 	);
 };
 
-interface LayerProps extends LayerConfig {
-	children: ReactNode;
-	className?: string;
-	/** Show debug information */
-	showDebug?: boolean;
-	/** Disable gestures */
-	disableGestures?: boolean;
-}
-
-/**
- * Page.Layer - An enhanced 3D layer component with gesture support and accessibility.
- *
- * Each layer is positioned absolutely and fills its container. Layers are stacked
- * with sophisticated depth effects and can be navigated with keyboard, mouse, or gestures.
- *
- * Must be wrapped in Page.LayerProvider to function.
- *
- * @example
- * <Page.LayerProvider>
- *   <Page.Layer
- *     title="Data Source"
- *     type="exploration"
- *     description="Select and configure data sources"
- *   >
- *     <h1>First Layer</h1>
- *   </Page.Layer>
- *   <Page.Layer
- *     title="Analysis"
- *     type="configuration"
- *   >
- *     <h1>Second Layer</h1>
- *   </Page.Layer>
- * </Page.LayerProvider>
- *
- * @param {Object} props
- * @param {ReactNode} props.children - Layer content
- * @param {string} props.title - Layer title (required)
- * @param {LayerType} [props.type='custom'] - Layer type category
- * @param {string} [props.description] - Layer description for accessibility
- * @param {string} [props.className] - Additional CSS classes
- * @param {boolean} [props.showDebug=false] - Show debug label
- */
-Page.Layer = ({
-	children,
-	className,
-	title,
-	type = "custom",
-	description,
-	priority,
-	customData,
-	showDebug = false,
-	disableGestures = false,
-}: LayerProps) => {
+Page.Layer = () => {
 	const context = useContext(LayerContext);
-	const [layerIndex, setLayerIndex] = useState<number | null>(null);
-	const [isActive, setIsActive] = useState(false);
-	const layerIdRef = useRef(`layer-${Math.random().toString(36).substr(2, 9)}`);
-	const layerRef = useRef<HTMLElement>(null);
-
-	// Register layer
-	useEffect(() => {
-		if (context) {
-			const config: LayerConfig = {
-				title,
-				type,
-				description,
-				priority,
-				customData,
-			};
-			const index = context.registerLayer(layerIdRef.current, config);
-			setLayerIndex(index);
-
-			return () => {
-				context.unregisterLayer(layerIdRef.current);
-			};
-		}
-	}, [context, title, type, description, priority, customData]);
-
-	// Calculate z-position based on index and offset
-	const zPosition =
-		layerIndex !== null && context
-			? -layerIndex * 1000 + context.currentOffset
-			: 0;
-
-	// Update active state
-	useEffect(() => {
-		setIsActive(zPosition === 0);
-	}, [zPosition]);
-
-	// Focus management
-	useEffect(() => {
-		if (isActive && layerRef.current) {
-			// Find first focusable element and focus it
-			const focusable = layerRef.current.querySelector<HTMLElement>(
-				'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-			);
-			if (focusable) {
-				focusable.focus();
-			}
-		}
-	}, [isActive]);
-
-	if (!context) {
-		console.warn("Page.Layer must be used within Page.LayerProvider");
-		return <section className={className}>{children}</section>;
-	}
-
-	if (layerIndex === null) {
-		return null;
-	}
-
-	if (layerIndex === null || !context) {
-		return null;
-	}
-
-	// Calculate visual effects based on z-position and reduced motion preference
-	const distanceFromFront = Math.abs(zPosition);
-	const scale = context.prefersReducedMotion
-		? 1
-		: Math.max(0.8, 1 - distanceFromFront / 5000);
-	const opacity = isActive
-		? 1
-		: Math.max(0.3, 1 - distanceFromFront / 2000);
-	const blur =
-		context.prefersReducedMotion || isActive
-			? 0
-			: Math.min(5, distanceFromFront / 400);
-
-	// Color tint based on depth (warmer = closer)
-	const tintAmount = Math.min(distanceFromFront / 3000, 0.1);
-	const filterString = `blur(${blur}px) ${isActive ? "" : `brightness(${1 - tintAmount})`}`;
-
-	// Gesture handlers
-	const handleDragEnd = (_e: unknown, info: { offset: { x: number } }) => {
-		if (disableGestures || !isActive) return;
-
-		const swipeThreshold = 50;
-		if (info.offset.x > swipeThreshold) {
-			// Swipe right - go backward
-			context.navigate("backward");
-		} else if (info.offset.x < -swipeThreshold) {
-			// Swipe left - go forward
-			context.navigate("forward");
-		}
+	const { ptr, next, insertMode, onComplete } = context || {
+		ptr: null,
+		next: null,
+		insertMode: false,
+		onComplete: () => {},
 	};
 
-	// Transition configuration from context
-	const easeValue = context.transitionConfig.type === "ease-in-out" ? ("easeInOut" as const)
-		: context.transitionConfig.type === "ease-out" ? ("easeOut" as const)
-		: ("linear" as const);
+	const positions = [ptr?.position, next?.position];
 
-	const transitionProps = context.prefersReducedMotion
-		? ({ duration: 0.1 } as const)
-		: context.transitionConfig.type === "spring"
-			? ({
-					type: "spring" as const,
-					stiffness: context.transitionConfig.stiffness ?? 100,
-					damping: context.transitionConfig.damping ?? 25,
-					mass: context.transitionConfig.mass ?? 1,
-				} as const)
-			: ({
-					type: "tween" as const,
-					ease: easeValue,
-					duration:
-						context.transitionConfig.duration ??
-						0.3 + Math.abs(distanceFromFront) / 5000,
-				} as const);
+	if (!context) return null;
+
+	const GRID_UNIT = 100;
+
+	const getLayerColor = (position: Position3D) => {
+		const colors = [
+			"bg-red-500/20",
+			"bg-blue-500/20",
+			"bg-green-500/20",
+			"bg-yellow-500/20",
+			"bg-purple-500/20",
+			"bg-pink-500/20",
+			"bg-indigo-500/20",
+			"bg-teal-500/20",
+			"bg-orange-500/20",
+			"bg-cyan-500/20",
+			"bg-lime-500/20",
+			"bg-rose-500/20",
+		];
+		const hash =
+			(position.x * 31 + position.y * 37 + position.z * 41) % colors.length;
+		return colors[Math.abs(hash)];
+	};
+
+	const baseClasses = "w-full h-full absolute inset-0";
+	const insertClasses = insertMode
+		? "bg-orange-500 border-2 border-orange-300"
+		: "bg-accent";
+	const gridClasses =
+		"absolute inset-0 h-full w-full bg-white bg-[radial-gradient(#999999_1px,transparent_1px)] bg-size-[16px_16px]";
+
+	// Calculate the offset to animate - move TO next if it exists
+	const targetPosition = next?.position ??
+		ptr?.position ?? { x: 0, y: 0, z: 0 };
 
 	return (
-		<motion.section
-			ref={layerRef}
-			className={cn(
-				"absolute inset-0 w-full h-full overflow-hidden",
-				className,
-			)}
+		<motion.div
+			className="w-full h-full absolute inset-0"
 			animate={{
-				scale,
-				opacity,
-				filter: filterString,
-				z: zPosition,
+				x: `${-targetPosition.x * GRID_UNIT}vw`,
+				y: `${-targetPosition.y * GRID_UNIT}vh`,
+				z: -targetPosition.z * GRID_UNIT,
 			}}
-			transition={transitionProps}
-			drag={!disableGestures && isActive ? "x" : false}
-			dragConstraints={{ left: 0, right: 0 }}
-			dragElastic={0.2}
-			onDragEnd={handleDragEnd}
-			style={{
-				transformStyle: "preserve-3d",
-				pointerEvents: isActive ? "auto" : "none",
-				willChange: "transform, opacity, filter",
+			transition={{ duration: 0.3, ease: "easeInOut" }}
+			onAnimationComplete={() => {
+				if (next) {
+					onComplete();
+				}
 			}}
-			role="region"
-			aria-label={title}
-			aria-description={description}
-			aria-hidden={!isActive}
-			{...(isActive ? {} : { inert: "" as any })}
 		>
-			{/* Debug label */}
-			{showDebug && (
-				<div className="absolute top-4 left-4 text-white bg-black/50 px-2 py-1 rounded text-xs z-50 font-mono">
-					Layer {layerIndex} | Z: {zPosition}px | {type} |{" "}
-					{isActive ? "ACTIVE" : "inactive"}
-				</div>
-			)}
+			{positions.map((position: Position3D | undefined) => {
+				if (!position) return null;
 
-			{children}
-		</motion.section>
+				return (
+					<div
+						className={`${baseClasses} ${getLayerColor(position)} ${insertClasses} ${gridClasses}`}
+						key={`layer-${position.x},${position.y},${position.z}`}
+						style={{
+							transform: `translate3d(${position.x * GRID_UNIT}vw, ${position.y * GRID_UNIT}vh, ${position.z * GRID_UNIT}px)`,
+						}}
+					>
+						{position.x},{position.y},{position.z}
+					</div>
+				);
+			})}
+		</motion.div>
 	);
 };

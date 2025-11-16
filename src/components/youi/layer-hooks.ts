@@ -20,6 +20,13 @@ import { LayerContext } from "./page";
 export const useLayerContext = (): LayerContextType => {
 	const context = useContext(LayerContext);
 	if (!context) {
+		// In development, provide a helpful error with stack trace
+		if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
+			console.error(
+				"useLayerContext must be used within Page.LayerProvider",
+				new Error().stack,
+			);
+		}
 		throw new Error("useLayerContext must be used within Page.LayerProvider");
 	}
 	return context;
@@ -172,10 +179,18 @@ export const useLayerNavigation = () => {
 		[context],
 	);
 
+	const navigateToGridPosition = useCallback(
+		(position: { x: number; y: number; z: number }) => {
+			context.navigateToGridPosition(position);
+		},
+		[context],
+	);
+
 	return {
 		navigate,
 		navigateToLayer,
 		navigateToIndex,
+		navigateToGridPosition,
 		goBack: context.goBack,
 		goForward: context.goForward,
 		canGoBack,

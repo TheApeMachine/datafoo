@@ -44,14 +44,16 @@ export interface LayerMetadata {
 	state: LayerState;
 	/** Custom application-specific data */
 	customData?: Record<string, unknown>;
-	/** Index in the layer stack (0 = front) - for Z-axis */
+	/** Index in the layer stack (0 = front) - legacy for backward compatibility */
 	index: number;
-	/** Current z-position in 3D space */
+	/** Current z-position in 3D space (legacy) */
 	zPosition: number;
 	/** X-coordinate in 3D space (0 = center) */
 	x: number;
 	/** Y-coordinate in 3D space (0 = center) */
 	y: number;
+	/** Z-coordinate in 3D space (0 = front) */
+	z: number;
 	/** Adjacent layer IDs */
 	adjacent: {
 		up?: string;
@@ -108,6 +110,8 @@ export interface LayerConfig {
 	x?: number;
 	/** Y coordinate (defaults to 0) */
 	y?: number;
+	/** Z coordinate (defaults to 0) */
+	z?: number;
 	/** Adjacent layer connections */
 	adjacent?: {
 		up?: string;
@@ -155,10 +159,14 @@ export interface LayerContextType {
 	currentX: number;
 	/** Current Y position */
 	currentY: number;
+	/** Current 3D grid position */
+	currentGridPosition: Grid3DPosition;
 	/** Navigate to a specific layer by ID */
 	navigateToLayer: (layerId: string) => void;
 	/** Navigate to a layer by index */
 	navigateToIndex: (index: number) => void;
+	/** Navigate to a specific grid position */
+	navigateToGridPosition: (position: Grid3DPosition) => void;
 	/** Navigate in a direction */
 	navigate: (direction: NavigationDirection) => void;
 	/** Go back in navigation history */
@@ -175,6 +183,14 @@ export interface LayerContextType {
 	setTransitionConfig: (config: Partial<TransitionConfig>) => void;
 	/** Whether reduced motion is preferred */
 	prefersReducedMotion: boolean;
+	/** Grid workspace configuration */
+	gridConfig: GridWorkspaceConfig;
+	/** Get layer at specific grid position */
+	getLayerAtPosition: (position: Grid3DPosition) => LayerMetadata | undefined;
+	/** Get all occupied grid positions */
+	getOccupiedPositions: () => LayerGridCell[];
+	/** Viewport dimensions (width/height) */
+	viewportDimensions: { width: number; height: number };
 }
 
 /**
@@ -219,5 +235,54 @@ export interface LayerPerformanceMetrics {
 	culledCount: number;
 	/** Average transition duration */
 	avgTransitionDuration: number;
+}
+
+/**
+ * 3D Grid position
+ */
+export interface Grid3DPosition {
+	/** X coordinate (horizontal) */
+	x: number;
+	/** Y coordinate (vertical) */
+	y: number;
+	/** Z coordinate (depth) */
+	z: number;
+}
+
+/**
+ * Grid workspace configuration
+ */
+export interface GridWorkspaceConfig {
+	/** Spacing between layers on each axis (in pixels) */
+	spacing: {
+		x: number;
+		y: number;
+		z: number;
+	};
+	/** Enable infinite grid (allows navigation beyond registered layers) */
+	infinite?: boolean;
+	/** Snap to grid when navigating */
+	snapToGrid?: boolean;
+	/** Grid bounds (optional, for finite grids) */
+	bounds?: {
+		minX: number;
+		maxX: number;
+		minY: number;
+		maxY: number;
+		minZ: number;
+		maxZ: number;
+	};
+}
+
+/**
+ * Layer grid cell data
+ */
+export interface LayerGridCell {
+	/** Position in grid */
+	position: Grid3DPosition;
+	/** Layer ID at this position (if any) */
+	layerId?: string;
+	/** Whether this cell is occupied */
+	occupied: boolean;
 }
 

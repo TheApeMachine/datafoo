@@ -176,42 +176,44 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<body>
 				<ThemeProvider>
 					<ConvexProvider>
-						<Page
-							className="transition-[grid-template-columns] duration-(--speed,0.16s) ease-(--timing,ease-out)"
-							style={{
-								gridTemplateColumns: isSidebarPinned
-									? "var(--sidebar-width,260px) 1fr auto"
-									: "0 1fr auto",
-							}}
-						>
-							<Page.Header>
-								<NavigationMenu />
-							</Page.Header>
-							<Page.Nav>
-								<Sidebar
-									data={NAVIGATION_DATA}
-									onPinnedChange={setIsSidebarPinned}
-								/>
-							</Page.Nav>
-							<Page.Main content="center">{children}</Page.Main>
-							<Page.Aside></Page.Aside>
-							<Page.Footer>
-								<Dock items={[]} />
-							</Page.Footer>
-						</Page>
-						<TanStackDevtools
-							config={{
-								position: "bottom-right",
-							}}
-							plugins={[
-								{
-									name: "Tanstack Router",
-									render: <TanStackRouterDevtoolsPanel />,
-								},
-								StoreDevtools,
-								TanStackQueryDevtools,
-							]}
-						/>
+						<Page.LayerProvider>
+							<Page
+								className="transition-[grid-template-columns] duration-(--speed,0.16s) ease-(--timing,ease-out)"
+								style={{
+									gridTemplateColumns: isSidebarPinned
+										? "var(--sidebar-width,260px) 1fr auto"
+										: "0 1fr auto",
+								}}
+							>
+								<Page.Header>
+									<NavigationMenu />
+								</Page.Header>
+								<Page.Nav>
+									<Sidebar
+										data={NAVIGATION_DATA}
+										onPinnedChange={setIsSidebarPinned}
+									/>
+								</Page.Nav>
+								<Page.Main content="center">{children}</Page.Main>
+								<Page.Aside></Page.Aside>
+								<Page.Footer>
+									<Dock items={[]} />
+								</Page.Footer>
+							</Page>
+							<TanStackDevtools
+								config={{
+									position: "bottom-right",
+								}}
+								plugins={[
+									{
+										name: "Tanstack Router",
+										render: <TanStackRouterDevtoolsPanel />,
+									},
+									StoreDevtools,
+									TanStackQueryDevtools,
+								]}
+							/>
+						</Page.LayerProvider>
 					</ConvexProvider>
 				</ThemeProvider>
 				<Scripts />
