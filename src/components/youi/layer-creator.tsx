@@ -87,10 +87,13 @@ export function useDynamicLayers(initialLayers: DynamicLayerData[] = []) {
 
 			setLayers((prev) => [...prev, newLayer]);
 
-			// Navigate to the new layer
+			console.log(`Created new layer at position (${newPos.x}, ${newPos.y}, ${newPos.z})`);
+
+			// Navigate to the new layer with a slight delay to allow React to render it first
 			setTimeout(() => {
+				console.log(`Navigating to new layer at (${newPos.x}, ${newPos.y}, ${newPos.z})`);
 				context.navigateToGridPosition(newPos);
-			}, 100);
+			}, 300);
 
 			return newLayer;
 		},

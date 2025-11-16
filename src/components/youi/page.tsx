@@ -787,14 +787,14 @@ Page.LayerProvider = ({
 			(layer) =>
 				layer.x === position.x &&
 				layer.y === position.y &&
-				layer.index === position.z,
+				layer.z === position.z,
 		);
 	}, []);
 
 	// Get all occupied grid positions
 	const getOccupiedPositions = useCallback((): LayerGridCell[] => {
 		return Array.from(layersRef.current.values()).map((layer) => ({
-			position: { x: layer.x, y: layer.y, z: layer.index },
+			position: { x: layer.x, y: layer.y, z: layer.z },
 			layerId: layer.id,
 			occupied: true,
 		}));
