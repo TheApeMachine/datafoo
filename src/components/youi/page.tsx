@@ -665,6 +665,11 @@ Page.LayerProvider = ({
 			const newY = position.y * gridConfig.spacing.y;
 			const newZ = position.z * gridConfig.spacing.z;
 
+			console.log(`Navigating to grid position (${position.x}, ${position.y}, ${position.z})`);
+			console.log(`  - Setting currentX: ${newX} (${position.x} * ${gridConfig.spacing.x})`);
+			console.log(`  - Setting currentY: ${newY} (${position.y} * ${gridConfig.spacing.y})`);
+			console.log(`  - Setting currentOffset: ${newZ} (${position.z} * ${gridConfig.spacing.z})`);
+
 			setCurrentX(newX);
 			setCurrentY(newY);
 			setCurrentOffset(newZ);
@@ -847,6 +852,7 @@ Page.LayerProvider = ({
 				const targetZ = Number.parseInt(e.key);
 				const currentXPos = currentX / gridConfig.spacing.x;
 				const currentYPos = currentY / gridConfig.spacing.y;
+				console.log(`Pressed "${e.key}" - attempting to navigate to Z=${targetZ} at current X=${currentXPos}, Y=${currentYPos}`);
 				navigateToGridPosition({ x: currentXPos, y: currentYPos, z: targetZ });
 			}
 		};
@@ -1084,6 +1090,14 @@ Page.Layer = ({
 	const xPosition = layerMetadata && context ? layerMetadata.x * context.gridConfig.spacing.x - context.currentX : 0;
 	const yPosition = layerMetadata && context ? layerMetadata.y * context.gridConfig.spacing.y - context.currentY : 0;
 	const zPosition = layerMetadata && context ? layerMetadata.z * context.gridConfig.spacing.z - context.currentOffset : 0;
+
+	// Debug logging for layer positions
+	useEffect(() => {
+		if (layerMetadata && context) {
+			console.log(`Layer "${title}" screen position: x=${xPosition}, y=${yPosition}, z=${zPosition}`);
+			console.log(`  - Grid: (${layerMetadata.x}, ${layerMetadata.y}, ${layerMetadata.z}), Viewport: (${context.currentX}, ${context.currentY}, ${context.currentOffset})`);
+		}
+	}, [layerMetadata, context, xPosition, yPosition, zPosition, title]);
 
 	// Update active state - layer is active when at origin (0, 0, 0) in screen space
 	useEffect(() => {
