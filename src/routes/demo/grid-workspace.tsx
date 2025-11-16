@@ -9,12 +9,38 @@ import { Flex } from "@/components/youi/flex";
 import { Text } from "@/components/youi/text";
 import { Grid3DIndicator } from "@/components/youi/layer-indicator";
 import { useLayerNavigation } from "@/components/youi/layer-hooks";
+import {
+	useDynamicLayers,
+	LayerCreator,
+	QuickLayerActions,
+	type DynamicLayerData,
+} from "@/components/youi/layer-creator";
 
 export const Route = createFileRoute("/demo/grid-workspace")({
 	component: GridWorkspaceDemo,
 });
 
+// Initial layers
+const initialLayers: DynamicLayerData[] = [
+	{
+		id: "center",
+		position: { x: 0, y: 0, z: 0 },
+		config: {
+			title: "Center Hub",
+			type: "exploration",
+			description: "The central hub - create new layers from here",
+			x: 0,
+			y: 0,
+			z: 0,
+			showDebug: true,
+		},
+	},
+];
+
 function GridWorkspaceDemo() {
+	const { layers, addLayer, removeLayerAtPosition } =
+		useDynamicLayers(initialLayers);
+
 	return (
 		<Page.LayerProvider
 			gridConfig={{
@@ -23,187 +49,76 @@ function GridWorkspaceDemo() {
 			}}
 		>
 			<Grid3DIndicator position="top-right" size={250} range={3} />
+			<LayerCreator
+				position="bottom-left"
+				onCreateLayer={(direction) =>
+					addLayer(direction, {
+						type: "custom",
+						showDebug: true,
+					})
+				}
+			/>
 
-			{/* Center layer at (0, 0, 0) */}
-			<Page.Layer
-				title="Center Hub"
-				type="exploration"
-				description="The central hub of the workspace"
-				x={0}
-				y={0}
-				z={0}
-				showDebug
-				className="bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center"
-			>
-				<LayerContent
-					title="Center Hub"
-					position={{ x: 0, y: 0, z: 0 }}
-					color="blue"
-					description="Navigate in any direction using arrow keys"
-				/>
-			</Page.Layer>
-
-			{/* X-axis layers (horizontal) */}
-			<Page.Layer
-				title="West Wing"
-				type="configuration"
-				description="Layer to the left"
-				x={-1}
-				y={0}
-				z={0}
-				showDebug
-				className="bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center"
-			>
-				<LayerContent
-					title="West Wing"
-					position={{ x: -1, y: 0, z: 0 }}
-					color="purple"
-					description="Press → to go back to center"
-				/>
-			</Page.Layer>
-
-			<Page.Layer
-				title="East Wing"
-				type="results"
-				description="Layer to the right"
-				x={1}
-				y={0}
-				z={0}
-				showDebug
-				className="bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center"
-			>
-				<LayerContent
-					title="East Wing"
-					position={{ x: 1, y: 0, z: 0 }}
-					color="green"
-					description="Press ← to go back to center"
-				/>
-			</Page.Layer>
-
-			{/* Y-axis layers (vertical) */}
-			<Page.Layer
-				title="Upper Level"
-				type="help"
-				description="Layer above"
-				x={0}
-				y={1}
-				z={0}
-				showDebug
-				className="bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center"
-			>
-				<LayerContent
-					title="Upper Level"
-					position={{ x: 0, y: 1, z: 0 }}
-					color="yellow"
-					description="Press ↓ to go back to center"
-				/>
-			</Page.Layer>
-
-			<Page.Layer
-				title="Lower Level"
-				type="custom"
-				description="Layer below"
-				x={0}
-				y={-1}
-				z={0}
-				showDebug
-				className="bg-gradient-to-br from-red-500 to-rose-500 flex items-center justify-center"
-			>
-				<LayerContent
-					title="Lower Level"
-					position={{ x: 0, y: -1, z: 0 }}
-					color="red"
-					description="Press ↑ to go back to center"
-				/>
-			</Page.Layer>
-
-			{/* Z-axis layers (depth) */}
-			<Page.Layer
-				title="Background Layer"
-				type="exploration"
-				description="Layer in the back (Z=1)"
-				x={0}
-				y={0}
-				z={1}
-				showDebug
-				className="bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center"
-			>
-				<LayerContent
-					title="Background Layer"
-					position={{ x: 0, y: 0, z: 1 }}
-					color="indigo"
-					description="Press 0 to return to front layer"
-				/>
-			</Page.Layer>
-
-			{/* Corner layers */}
-			<Page.Layer
-				title="NE Corner"
-				type="configuration"
-				description="Northeast corner"
-				x={1}
-				y={1}
-				z={0}
-				showDebug
-				className="bg-gradient-to-br from-teal-500 to-cyan-600 flex items-center justify-center"
-			>
-				<LayerContent
-					title="Northeast Corner"
-					position={{ x: 1, y: 1, z: 0 }}
-					color="teal"
-					description="At the intersection of East and Upper"
-				/>
-			</Page.Layer>
-
-			<Page.Layer
-				title="SW Corner"
-				type="results"
-				description="Southwest corner"
-				x={-1}
-				y={-1}
-				z={0}
-				showDebug
-				className="bg-gradient-to-br from-amber-500 to-yellow-600 flex items-center justify-center"
-			>
-				<LayerContent
-					title="Southwest Corner"
-					position={{ x: -1, y: -1, z: 0 }}
-					color="amber"
-					description="At the intersection of West and Lower"
-				/>
-			</Page.Layer>
-
-			{/* 3D diagonal layer */}
-			<Page.Layer
-				title="Deep Corner"
-				type="custom"
-				description="Far diagonal corner"
-				x={1}
-				y={1}
-				z={1}
-				showDebug
-				className="bg-gradient-to-br from-fuchsia-500 to-pink-600 flex items-center justify-center"
-			>
-				<LayerContent
-					title="Deep Diagonal"
-					position={{ x: 1, y: 1, z: 1 }}
-					color="fuchsia"
-					description="Furthest corner in 3D space (press 0 or Esc to return)"
-				/>
-			</Page.Layer>
+			{/* Dynamically created layers */}
+			{layers.map((layer) => (
+				<Page.Layer
+					key={layer.id}
+					{...layer.config}
+					className={getLayerClassName(layer.position)}
+				>
+					{layer.content || (
+						<DynamicLayerContent
+							position={layer.position}
+							title={layer.config.title || "Layer"}
+							onAddLayer={addLayer}
+							onRemoveLayer={() => removeLayerAtPosition(layer.position)}
+						/>
+					)}
+				</Page.Layer>
+			))}
 		</Page.LayerProvider>
 	);
 }
 
-interface LayerContentProps {
-	title: string;
-	position: { x: number; y: number; z: number };
-	color: string;
-	description: string;
+// Helper to get layer color based on position
+function getLayerClassName(position: { x: number; y: number; z: number }): string {
+	const colors = [
+		"from-blue-500 to-cyan-500",
+		"from-purple-500 to-pink-500",
+		"from-green-500 to-emerald-500",
+		"from-yellow-500 to-orange-500",
+		"from-red-500 to-rose-500",
+		"from-indigo-500 to-purple-600",
+		"from-teal-500 to-cyan-600",
+		"from-amber-500 to-yellow-600",
+		"from-fuchsia-500 to-pink-600",
+		"from-lime-500 to-green-500",
+		"from-sky-500 to-blue-500",
+	];
+
+	// Use position to deterministically select a color
+	const hash = Math.abs(position.x * 7 + position.y * 13 + position.z * 17);
+	const colorIndex = hash % colors.length;
+
+	return `bg-gradient-to-br ${colors[colorIndex]} flex items-center justify-center`;
 }
 
-function LayerContent({ title, position, color, description }: LayerContentProps) {
-	const { navigate, navigateToGridPosition } = useLayerNavigation();
+interface DynamicLayerContentProps {
+	title: string;
+	position: { x: number; y: number; z: number };
+	onAddLayer: (
+		direction: "top" | "right" | "bottom" | "left" | "stack",
+	) => void;
+	onRemoveLayer: () => void;
+}
+
+function DynamicLayerContent({
+	title,
+	position,
+	onAddLayer,
+	onRemoveLayer,
+}: DynamicLayerContentProps) {
+	const { navigateToGridPosition } = useLayerNavigation();
 
 	return (
 		<Flex className="flex-col items-center gap-6 text-white p-8 max-w-2xl">
@@ -211,13 +126,28 @@ function LayerContent({ title, position, color, description }: LayerContentProps
 				{title}
 			</Text.Title>
 
-			<div className={`text-sm font-mono bg-white/20 px-4 py-2 rounded-lg`}>
+			<div className="text-sm font-mono bg-white/20 px-4 py-2 rounded-lg">
 				Position: ({position.x}, {position.y}, {position.z})
 			</div>
 
 			<Text.Paragraph center className="text-xl">
-				{description}
+				{position.x === 0 && position.y === 0 && position.z === 0
+					? "Welcome! Create new layers using the buttons below or the menu in the bottom-left corner."
+					: "Navigate using arrow keys or create new layers from this position."}
 			</Text.Paragraph>
+
+			{/* Quick layer creation actions */}
+			<div className="mt-4 p-6 bg-white/10 rounded-lg backdrop-blur-sm border border-white/20 max-w-lg">
+				<Text.Paragraph center className="mb-4 font-semibold">
+					Create New Layer:
+				</Text.Paragraph>
+
+				<QuickLayerActions onCreateLayer={onAddLayer} className="justify-center" />
+
+				<div className="mt-4 text-xs text-white/60 text-center">
+					Creates a new layer adjacent to this one
+				</div>
+			</div>
 
 			{/* Navigation instructions */}
 			<div className="mt-8 p-6 bg-white/10 rounded-lg backdrop-blur-sm border border-white/20 max-w-lg">
@@ -269,59 +199,40 @@ function LayerContent({ title, position, color, description }: LayerContentProps
 				</div>
 			</div>
 
-			{/* Quick navigation buttons */}
+			{/* Action buttons */}
 			<div className="flex flex-wrap gap-3 mt-4 justify-center">
 				{position.x !== 0 || position.y !== 0 || position.z !== 0 ? (
+					<>
+						<Button
+							size="lg"
+							onClick={() => navigateToGridPosition({ x: 0, y: 0, z: 0 })}
+							className="bg-white text-blue-500 hover:bg-gray-100"
+						>
+							← Return to Center
+						</Button>
+						<Button
+							size="lg"
+							onClick={onRemoveLayer}
+							className="bg-red-500/80 hover:bg-red-500 text-white"
+						>
+							🗑 Delete Layer
+						</Button>
+					</>
+				) : (
 					<Button
 						size="lg"
 						onClick={() => navigateToGridPosition({ x: 0, y: 0, z: 0 })}
-						className={`bg-white text-${color}-500 hover:bg-gray-100`}
+						className="bg-white/20 hover:bg-white/30 text-white border border-white/30"
 					>
-						← Return to Center
+						↺ Reset View
 					</Button>
-				) : (
-					<>
-						<Button
-							size="md"
-							onClick={() => navigate("left")}
-							className="bg-white/20 hover:bg-white/30 text-white border border-white/30"
-						>
-							← West
-						</Button>
-						<Button
-							size="md"
-							onClick={() => navigate("right")}
-							className="bg-white/20 hover:bg-white/30 text-white border border-white/30"
-						>
-							East →
-						</Button>
-						<Button
-							size="md"
-							onClick={() => navigate("up")}
-							className="bg-white/20 hover:bg-white/30 text-white border border-white/30"
-						>
-							↑ Up
-						</Button>
-						<Button
-							size="md"
-							onClick={() => navigate("down")}
-							className="bg-white/20 hover:bg-white/30 text-white border border-white/30"
-						>
-							↓ Down
-						</Button>
-						<Button
-							size="md"
-							onClick={() => navigate("forward")}
-							className="bg-white/20 hover:bg-white/30 text-white border border-white/30"
-						>
-							⬇ Back
-						</Button>
-					</>
 				)}
 			</div>
 
 			<div className="mt-4 text-xs opacity-60 text-center">
 				Watch the 3D Grid Indicator (top-right) to see your position
+				<br />
+				Use "New Layer" button (bottom-left) for more options
 			</div>
 		</Flex>
 	);

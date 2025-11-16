@@ -867,7 +867,7 @@ Page.LayerProvider = ({
 		currentGridPosition: {
 			x: currentX / gridConfig.spacing.x,
 			y: currentY / gridConfig.spacing.y,
-			z: -currentOffset / gridConfig.spacing.z,
+			z: currentOffset / gridConfig.spacing.z,
 		},
 		navigateToLayer,
 		navigateToIndex,
