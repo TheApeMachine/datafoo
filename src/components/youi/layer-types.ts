@@ -189,6 +189,8 @@ export interface LayerContextType {
 	getLayerAtPosition: (position: Grid3DPosition) => LayerMetadata | undefined;
 	/** Get all occupied grid positions */
 	getOccupiedPositions: () => LayerGridCell[];
+	/** Viewport dimensions (width/height) */
+	viewportDimensions: { width: number; height: number };
 }
 
 /**

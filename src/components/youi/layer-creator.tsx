@@ -32,9 +32,11 @@ export function calculateNewPosition(
 ): Grid3DPosition {
 	switch (direction) {
 		case "top":
-			return { x: currentPos.x, y: currentPos.y + 1, z: currentPos.z };
-		case "bottom":
+			// Top means up in screen space, which is negative Y
 			return { x: currentPos.x, y: currentPos.y - 1, z: currentPos.z };
+		case "bottom":
+			// Bottom means down in screen space, which is positive Y
+			return { x: currentPos.x, y: currentPos.y + 1, z: currentPos.z };
 		case "left":
 			return { x: currentPos.x - 1, y: currentPos.y, z: currentPos.z };
 		case "right":
@@ -59,7 +61,39 @@ export function useDynamicLayers(initialLayers: DynamicLayerData[] = []) {
 			config: Partial<LayerConfig> = {},
 			content?: React.ReactNode,
 		) => {
-			const currentPos = context.currentGridPosition;
+			// Get the position of the currently active layer
+			// First try to get it from the active layer metadata, but fall back to
+			// finding the layer at the current grid position if state hasn't updated yet
+			let activeLayer = context.getActiveLayer();
+			let currentPos: Grid3DPosition;
+			
+			if (activeLayer) {
+				currentPos = { x: activeLayer.x, y: activeLayer.y, z: activeLayer.z };
+			} else {
+				// Fallback: find layer at current grid position (round to handle floating point precision)
+				const gridPos = context.currentGridPosition;
+				const roundedPos = {
+					x: Math.round(gridPos.x),
+					y: Math.round(gridPos.y),
+					z: Math.round(gridPos.z),
+				};
+				const layerAtCurrentPos = context.getLayerAtPosition(roundedPos);
+				if (layerAtCurrentPos) {
+					currentPos = { x: layerAtCurrentPos.x, y: layerAtCurrentPos.y, z: layerAtCurrentPos.z };
+					activeLayer = layerAtCurrentPos;
+				} else {
+					// If no layer exists at current position, use the current grid position directly
+					// This handles the case where we're creating the first layer or the initial layer isn't activated yet
+					currentPos = roundedPos;
+					console.log(`No active layer found, using current grid position (${currentPos.x}, ${currentPos.y}, ${currentPos.z}) as reference`);
+				}
+			}
+			
+			if (activeLayer) {
+				console.log(`Creating layer ${direction} from active layer "${activeLayer.title}" at (${currentPos.x}, ${currentPos.y}, ${currentPos.z})`);
+			} else {
+				console.log(`Creating layer ${direction} from grid position (${currentPos.x}, ${currentPos.y}, ${currentPos.z})`);
+			}
 			const newPos = calculateNewPosition(currentPos, direction);
 
 			// Check if layer already exists at this position
